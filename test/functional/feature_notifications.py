@@ -102,7 +102,7 @@ class NotificationsTest(WidecoinTestFramework):
 
             # Generate bump transaction, sync mempools, and check for bump1
             # notification. In the future, per
-            # https://github.com/widecoin/widecoin/pull/9371, it might be better
+            # https://github.com/widecoin-project/widecoin/pull/9371, it might be better
             # to have notifications for both tx1 and bump1.
             bump1 = self.nodes[0].bumpfee(tx1)["txid"]
             assert_equal(bump1 in self.nodes[0].getrawmempool(), True)

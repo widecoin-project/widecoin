@@ -23,7 +23,7 @@ packages:
 - "ca-certificates"
 - "python3"
 remotes:
-- "url": "https://github.com/widecoin/widecoin.git"
+- "url": "https://github.com/widecoin-project/widecoin.git"
   "dir": "widecoin"
 files: []
 script: |
