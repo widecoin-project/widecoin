@@ -210,8 +210,13 @@ def main():
 
     # Disable for MacOS if no SDK found
     if args.macos and not os.path.isfile('gitian-builder/inputs/Xcode-11.3.1-11C505-extracted-SDK-with-libcxx-headers.tar.gz'):
-        print('Cannot build for MacOS, SDK does not exist. Will build for other OSes')
-        args.macos = False
+        print('MacOS, SDK does not exist at inputs. trying to download')
+        subprocess.check_call(['wget', '-O', 'gitian-builder/inputs/Xcode-11.3.1-11C505-extracted-SDK-with-libcxx-headers.tar.gz', 'https://bitcoincore.org/depends-sources/sdks/Xcode-11.3.1-11C505-extracted-SDK-with-libcxx-headers.tar.gz'])
+        subprocess.check_call(["echo '436df6dfc7073365d12f8ef6c1fdb060777c720602cc67c2dcf9a59d94290e38 gitian-builder/inputs/Xcode-11.3.1-11C505-extracted-SDK-with-libcxx-headers.tar.gz' | sha256sum -c"], shell=True)
+
+    if args.macos and os.path.isfile('gitian-builder/inputs/Xcode-11.3.1-11C505-extracted-SDK-with-libcxx-headers.tar.gz'):
+        print('SHA256SUM check macOS, SDK')
+        subprocess.check_call(["echo '436df6dfc7073365d12f8ef6c1fdb060777c720602cc67c2dcf9a59d94290e38 gitian-builder/inputs/Xcode-11.3.1-11C505-extracted-SDK-with-libcxx-headers.tar.gz' | sha256sum -c"], shell=True)
 
     args.sign_prog = 'true' if args.detach_sign else 'gpg --detach-sign'
 
