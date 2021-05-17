@@ -3,7 +3,7 @@
 ## Supported Versions
 
 See our website for versions of Widecoin Core that are currently supported with
-security updates: https://widecoincore.org/en/lifecycle/#schedule
+security updates: https://widecoin.org/en/lifecycle/#schedule
 
 ## Reporting a Vulnerability
 

@@ -360,7 +360,7 @@ widecoin.org (see below for widecoin.org update instructions).
 
   - widecoin-dev and widecoin-core-dev mailing list
 
-  - Widecoin Core announcements list https://widecoincore.org/en/list/announcements/join/
+  - Widecoin Core announcements list https://widecoin.org/en/list/announcements/join/
 
   - Update title of #widecoin on Freenode IRC
 

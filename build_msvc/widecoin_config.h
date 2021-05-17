@@ -259,7 +259,7 @@
 #define PACKAGE_TARNAME "widecoin"
 
 /* Define to the home page for this package. */
-#define PACKAGE_URL "https://widecoincore.org/"
+#define PACKAGE_URL "https://widecoin.org/"
 
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "0.21.0"
