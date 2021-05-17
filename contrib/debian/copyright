@@ -2,7 +2,7 @@ Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Widecoin
 Upstream-Contact: Satoshi Nakamoto <satoshin@gmx.com>
  irc://#widecoin@freenode.net
-Source: https://github.com/widecoin-project/widecoin
+Source: https://github.com/mraksoll4/widecoin
 
 Files: *
 Copyright: 2009-2020, Widecoin Core Developers

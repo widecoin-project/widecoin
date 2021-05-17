@@ -55,8 +55,8 @@ test_script:
 - cmd: python test\util\rpcauth-test.py
 # Fee estimation test failing on appveyor with: WinError 10048] Only one usage of each socket address (protocol/network address/port) is normally permitted.
 # functional tests disabled for now. See
-# https://github.com/widecoin-project/widecoin/pull/18626#issuecomment-613396202
-# https://github.com/widecoin-project/widecoin/issues/18623
+# https://github.com/mraksoll4/widecoin/pull/18626#issuecomment-613396202
+# https://github.com/mraksoll4/widecoin/issues/18623
 # - cmd: python test\functional\test_runner.py --ci --quiet --combinedlogslen=4000 --failfast --exclude feature_fee_estimation
 artifacts:
 #- path: widecoin-%APPVEYOR_BUILD_VERSION%.zip

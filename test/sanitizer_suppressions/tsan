@@ -47,4 +47,4 @@ deadlock:src/qt/test/*
 # External libraries
 deadlock:libdb
 race:libzmq
-race:epoll_ctl  # https://github.com/widecoin-project/widecoin/pull/20218
+race:epoll_ctl  # https://github.com/mraksoll4/widecoin/pull/20218

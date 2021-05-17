@@ -15,7 +15,7 @@
 BOOST_FIXTURE_TEST_SUITE(system_tests, BasicTestingSetup)
 
 // At least one test is required (in case HAVE_BOOST_PROCESS is not defined).
-// Workaround for https://github.com/widecoin-project/widecoin/issues/19128
+// Workaround for https://github.com/mraksoll4/widecoin/issues/19128
 BOOST_AUTO_TEST_CASE(dummy)
 {
     BOOST_CHECK(true);

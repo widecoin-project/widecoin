@@ -10,7 +10,7 @@ improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at GitHub:
 
-  <https://github.com/widecoin-project/widecoin/issues>
+  <https://github.com/mraksoll4/widecoin/issues>
 
 Downgrade warning
 ------------------

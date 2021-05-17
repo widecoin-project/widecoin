@@ -120,7 +120,7 @@ def download_binary(tag, args) -> int:
 
 
 def build_release(tag, args) -> int:
-    githubUrl = "https://github.com/widecoin-project/widecoin"
+    githubUrl = "https://github.com/mraksoll4/widecoin"
     if args.remove_dir:
         if Path(tag).is_dir():
             shutil.rmtree(tag)
