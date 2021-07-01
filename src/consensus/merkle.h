@@ -1,16 +1,20 @@
-// Copyright (c) 2015-2019 The Widecoin Core developers
+// Copyright (c) 2015-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WIDECOIN_CONSENSUS_MERKLE_H
-#define WIDECOIN_CONSENSUS_MERKLE_H
+#ifndef WIDECOIN_MERKLE
+#define WIDECOIN_MERKLE
 
+#include <stdint.h>
 #include <vector>
 
+#include <primitives/transaction.h>
 #include <primitives/block.h>
 #include <uint256.h>
 
-uint256 ComputeMerkleRoot(std::vector<uint256> hashes, bool* mutated = nullptr);
+uint256 ComputeMerkleRoot(const std::vector<uint256>& leaves, bool* mutated = nullptr);
+std::vector<uint256> ComputeMerkleBranch(const std::vector<uint256>& leaves, uint32_t position);
+uint256 ComputeMerkleRootFromBranch(const uint256& leaf, const std::vector<uint256>& branch, uint32_t position);
 
 /*
  * Compute the Merkle root of the transactions in a block.
@@ -24,4 +28,11 @@ uint256 BlockMerkleRoot(const CBlock& block, bool* mutated = nullptr);
  */
 uint256 BlockWitnessMerkleRoot(const CBlock& block, bool* mutated = nullptr);
 
-#endif // WIDECOIN_CONSENSUS_MERKLE_H
+/*
+ * Compute the Merkle branch for the tree of transactions in a block, for a
+ * given position.
+ * This can be verified using ComputeMerkleRootFromBranch.
+ */
+std::vector<uint256> BlockMerkleBranch(const CBlock& block, uint32_t position);
+
+#endif

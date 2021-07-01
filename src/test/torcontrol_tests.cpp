@@ -2,23 +2,17 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 //
-#include <test/util/setup_common.h>
+#include <test/test_widecoin.h>
+#include <torcontrol.cpp>
 
 #include <boost/test/unit_test.hpp>
-
-#include <map>
-#include <string>
-#include <utility>
-
-
-std::pair<std::string, std::string> SplitTorReplyLine(const std::string& s);
-std::map<std::string, std::string> ParseTorReplyMapping(const std::string& s);
 
 
 BOOST_FIXTURE_TEST_SUITE(torcontrol_tests, BasicTestingSetup)
 
-static void CheckSplitTorReplyLine(std::string input, std::string command, std::string args)
+void CheckSplitTorReplyLine(std::string input, std::string command, std::string args)
 {
+    BOOST_TEST_MESSAGE(std::string("CheckSplitTorReplyLine(") + input + ")");
     auto ret = SplitTorReplyLine(input);
     BOOST_CHECK_EQUAL(ret.first, command);
     BOOST_CHECK_EQUAL(ret.second, args);
@@ -57,8 +51,9 @@ BOOST_AUTO_TEST_CASE(util_SplitTorReplyLine)
     CheckSplitTorReplyLine("COMMAND   EVEN+more  ARGS", "COMMAND", "  EVEN+more  ARGS");
 }
 
-static void CheckParseTorReplyMapping(std::string input, std::map<std::string,std::string> expected)
+void CheckParseTorReplyMapping(std::string input, std::map<std::string,std::string> expected)
 {
+    BOOST_TEST_MESSAGE(std::string("CheckParseTorReplyMapping(") + input + ")");
     auto ret = ParseTorReplyMapping(input);
     BOOST_CHECK_EQUAL(ret.size(), expected.size());
     auto r_it = ret.begin();
@@ -170,11 +165,12 @@ BOOST_AUTO_TEST_CASE(util_ParseTorReplyMapping)
 
     // Special handling for null case
     // (needed because string comparison reads the null as end-of-string)
+    BOOST_TEST_MESSAGE(std::string("CheckParseTorReplyMapping(Null=\"\\0\")"));
     auto ret = ParseTorReplyMapping("Null=\"\\0\"");
-    BOOST_CHECK_EQUAL(ret.size(), 1U);
+    BOOST_CHECK_EQUAL(ret.size(), 1);
     auto r_it = ret.begin();
     BOOST_CHECK_EQUAL(r_it->first, "Null");
-    BOOST_CHECK_EQUAL(r_it->second.size(), 1U);
+    BOOST_CHECK_EQUAL(r_it->second.size(), 1);
     BOOST_CHECK_EQUAL(r_it->second[0], '\0');
 
     // A more complex valid grammar. PROTOCOLINFO accepts a VersionLine that

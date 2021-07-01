@@ -1,20 +1,16 @@
-// Copyright (c) 2011-2019 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef WIDECOIN_QT_SENDCOINSENTRY_H
 #define WIDECOIN_QT_SENDCOINSENTRY_H
 
-#include <qt/sendcoinsrecipient.h>
+#include <qt/walletmodel.h>
 
 #include <QStackedWidget>
 
 class WalletModel;
 class PlatformStyle;
-
-namespace interfaces {
-class Node;
-} // namespace interfaces
 
 namespace Ui {
     class SendCoinsEntry;
@@ -30,11 +26,11 @@ class SendCoinsEntry : public QStackedWidget
     Q_OBJECT
 
 public:
-    explicit SendCoinsEntry(const PlatformStyle *platformStyle, QWidget *parent = nullptr);
+    explicit SendCoinsEntry(const PlatformStyle *platformStyle, QWidget *parent = 0);
     ~SendCoinsEntry();
 
     void setModel(WalletModel *model);
-    bool validate(interfaces::Node& node);
+    bool validate();
     SendCoinsRecipient getValue();
 
     /** Return whether the entry is still empty and unedited */

@@ -1,18 +1,17 @@
-// Copyright (c) 2015-2019 The Widecoin Core developers
+// Copyright (c) 2015-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef WIDECOIN_HTTPRPC_H
 #define WIDECOIN_HTTPRPC_H
 
-namespace util {
-class Ref;
-} // namespace util
+#include <string>
+#include <map>
 
 /** Start HTTP RPC subsystem.
  * Precondition; HTTP and RPC has been started.
  */
-bool StartHTTPRPC(const util::Ref& context);
+bool StartHTTPRPC();
 /** Interrupt HTTP RPC subsystem.
  */
 void InterruptHTTPRPC();
@@ -24,7 +23,7 @@ void StopHTTPRPC();
 /** Start HTTP REST subsystem.
  * Precondition; HTTP and RPC has been started.
  */
-void StartREST(const util::Ref& context);
+bool StartREST();
 /** Interrupt RPC REST subsystem.
  */
 void InterruptREST();

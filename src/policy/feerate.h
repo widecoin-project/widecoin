@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2019 The Widecoin Core developers
+// Copyright (c) 2009-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,17 +11,7 @@
 
 #include <string>
 
-const std::string CURRENCY_UNIT = "WCN"; // One formatted unit
-const std::string CURRENCY_ATOM = "sat"; // One indivisible minimum value unit
-
-/* Used to determine type of fee estimation requested */
-enum class FeeEstimateMode {
-    UNSET,        //!< Use default settings based on other criteria
-    ECONOMICAL,   //!< Force estimateSmartFee to use non-conservative estimates
-    CONSERVATIVE, //!< Force estimateSmartFee to use conservative estimates
-    WCN_KVB,      //!< Use WCN/kvB fee rate unit
-    SAT_VB,       //!< Use sat/vB fee rate unit
-};
+extern const std::string CURRENCY_UNIT;
 
 /**
  * Fee rate in satoshis per kilobyte: CAmount / kB
@@ -35,20 +25,11 @@ public:
     /** Fee rate of 0 satoshis per kB */
     CFeeRate() : nSatoshisPerK(0) { }
     template<typename I>
-    explicit CFeeRate(const I _nSatoshisPerK): nSatoshisPerK(_nSatoshisPerK) {
+    CFeeRate(const I _nSatoshisPerK): nSatoshisPerK(_nSatoshisPerK) {
         // We've previously had bugs creep in from silent double->int conversion...
         static_assert(std::is_integral<I>::value, "CFeeRate should be used without floats");
     }
-    /** Constructor for a fee rate in satoshis per kvB (sat/kvB). The size in bytes must not exceed (2^63 - 1).
-     *
-     *  Passing an nBytes value of COIN (1e8) returns a fee rate in satoshis per vB (sat/vB),
-     *  e.g. (nFeePaid * 1e8 / 1e3) == (nFeePaid / 1e5),
-     *  where 1e5 is the ratio to convert from WCN/kvB to sat/vB.
-     *
-     *  @param[in] nFeePaid  CAmount fee rate to construct with
-     *  @param[in] nBytes    size_t bytes (units) to construct with
-     *  @returns   fee rate
-     */
+    /** Constructor for a fee rate in satoshis per kB. The size in bytes must not exceed (2^63 - 1)*/
     CFeeRate(const CAmount& nFeePaid, size_t nBytes);
     /**
      * Return the fee in satoshis for the given size in bytes.
@@ -65,9 +46,14 @@ public:
     friend bool operator>=(const CFeeRate& a, const CFeeRate& b) { return a.nSatoshisPerK >= b.nSatoshisPerK; }
     friend bool operator!=(const CFeeRate& a, const CFeeRate& b) { return a.nSatoshisPerK != b.nSatoshisPerK; }
     CFeeRate& operator+=(const CFeeRate& a) { nSatoshisPerK += a.nSatoshisPerK; return *this; }
-    std::string ToString(const FeeEstimateMode& fee_estimate_mode = FeeEstimateMode::WCN_KVB) const;
+    std::string ToString() const;
 
-    SERIALIZE_METHODS(CFeeRate, obj) { READWRITE(obj.nSatoshisPerK); }
+    ADD_SERIALIZE_METHODS;
+
+    template <typename Stream, typename Operation>
+    inline void SerializationOp(Stream& s, Operation ser_action) {
+        READWRITE(nSatoshisPerK);
+    }
 };
 
 #endif //  WIDECOIN_POLICY_FEERATE_H

@@ -1,4 +1,4 @@
-// Copyright (c) 2015-2020 The Widecoin Core developers
+// Copyright (c) 2015-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,11 +6,9 @@
 #define WIDECOIN_MEMUSAGE_H
 
 #include <indirectmap.h>
-#include <prevector.h>
 
 #include <stdlib.h>
 
-#include <cassert>
 #include <map>
 #include <memory>
 #include <set>

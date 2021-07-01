@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,20 +7,26 @@
 #include <qt/widecoinaddressvalidator.h>
 #include <qt/widecoinunits.h>
 #include <qt/qvalidatedlineedit.h>
-#include <qt/sendcoinsrecipient.h>
+#include <qt/walletmodel.h>
 
-#include <base58.h>
-#include <chainparams.h>
-#include <interfaces/node.h>
-#include <key_io.h>
-#include <policy/policy.h>
 #include <primitives/transaction.h>
+#include <init.h>
+#include <policy/policy.h>
 #include <protocol.h>
 #include <script/script.h>
 #include <script/standard.h>
-#include <util/system.h>
+#include <util.h>
 
 #ifdef WIN32
+#ifdef _WIN32_WINNT
+#undef _WIN32_WINNT
+#endif
+#define _WIN32_WINNT 0x0501
+#ifdef _WIN32_IE
+#undef _WIN32_IE
+#endif
+#define _WIN32_IE 0x0501
+#define WIN32_LEAN_AND_MEAN 1
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
@@ -29,38 +35,43 @@
 #include <shlwapi.h>
 #endif
 
+#include <boost/scoped_array.hpp>
+
 #include <QAbstractItemView>
 #include <QApplication>
 #include <QClipboard>
 #include <QDateTime>
 #include <QDesktopServices>
+#include <QDesktopWidget>
 #include <QDoubleValidator>
 #include <QFileDialog>
 #include <QFont>
-#include <QFontDatabase>
-#include <QFontMetrics>
-#include <QGuiApplication>
-#include <QKeyEvent>
 #include <QLineEdit>
-#include <QList>
-#include <QMenu>
-#include <QMouseEvent>
-#include <QProgressDialog>
-#include <QScreen>
 #include <QSettings>
-#include <QShortcut>
-#include <QSize>
-#include <QString>
 #include <QTextDocument> // for Qt::mightBeRichText
 #include <QThread>
+#include <QMouseEvent>
+
+#if QT_VERSION < 0x050000
+#include <QUrl>
+#else
 #include <QUrlQuery>
-#include <QtGlobal>
+#endif
+
+#if QT_VERSION >= 0x50200
+#include <QFontDatabase>
+#endif
+
+static fs::detail::utf8_codecvt_facet utf8;
 
 #if defined(Q_OS_MAC)
-
-#include <QProcess>
-
-void ForceActivation();
+extern double NSAppKitVersionNumber;
+#if !defined(NSAppKitVersionNumber10_8)
+#define NSAppKitVersionNumber10_8 1187
+#endif
+#if !defined(NSAppKitVersionNumber10_9)
+#define NSAppKitVersionNumber10_9 1265
+#endif
 #endif
 
 namespace GUIUtil {
@@ -77,10 +88,20 @@ QString dateTimeStr(qint64 nTime)
 
 QFont fixedPitchFont()
 {
+#if QT_VERSION >= 0x50200
     return QFontDatabase::systemFont(QFontDatabase::FixedFont);
+#else
+    QFont font("Monospace");
+#if QT_VERSION >= 0x040800
+    font.setStyleHint(QFont::Monospace);
+#else
+    font.setStyleHint(QFont::TypeWriter);
+#endif
+    return font;
+#endif
 }
 
-// Just some dummy data to generate a convincing random-looking (but consistent) address
+// Just some dummy data to generate an convincing random-looking (but consistent) address
 static const uint8_t dummydata[] = {0xeb,0x15,0x23,0x1d,0xfc,0xeb,0x60,0x92,0x58,0x86,0xb6,0x7d,0x06,0x52,0x99,0x92,0x59,0x15,0xae,0xb1,0x72,0xc0,0x66,0x47};
 
 // Generate a dummy address with invalid CRC, starting with the network prefix.
@@ -89,7 +110,7 @@ static std::string DummyAddress(const CChainParams &params)
     std::vector<unsigned char> sourcedata = params.Base58Prefix(CChainParams::PUBKEY_ADDRESS);
     sourcedata.insert(sourcedata.end(), dummydata, dummydata + sizeof(dummydata));
     for(int i=0; i<256; ++i) { // Try every trailing byte
-        std::string s = EncodeBase58(sourcedata);
+        std::string s = EncodeBase58(sourcedata.data(), sourcedata.data() + sourcedata.size());
         if (!IsValidDestinationString(s)) {
             return s;
         }
@@ -103,12 +124,23 @@ void setupAddressWidget(QValidatedLineEdit *widget, QWidget *parent)
     parent->setFocusProxy(widget);
 
     widget->setFont(fixedPitchFont());
+#if QT_VERSION >= 0x040700
     // We don't want translators to use own addresses in translations
     // and this is the only place, where this address is supplied.
     widget->setPlaceholderText(QObject::tr("Enter a Widecoin address (e.g. %1)").arg(
         QString::fromStdString(DummyAddress(Params()))));
+#endif
     widget->setValidator(new WidecoinAddressEntryValidator(parent));
     widget->setCheckValidator(new WidecoinAddressCheckValidator(parent));
+}
+
+void setupAmountWidget(QLineEdit *widget, QWidget *parent)
+{
+    QDoubleValidator *amountValidator = new QDoubleValidator(parent);
+    amountValidator->setDecimals(8);
+    amountValidator->setBottom(0.0);
+    widget->setValidator(amountValidator);
+    widget->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
 }
 
 bool parseWidecoinURI(const QUrl &uri, SendCoinsRecipient *out)
@@ -125,8 +157,12 @@ bool parseWidecoinURI(const QUrl &uri, SendCoinsRecipient *out)
     }
     rv.amount = 0;
 
+#if QT_VERSION < 0x050000
+    QList<QPair<QString, QString> > items = uri.queryItems();
+#else
     QUrlQuery uriQuery(uri);
     QList<QPair<QString, QString> > items = uriQuery.queryItems();
+#endif
     for (QList<QPair<QString, QString> >::iterator i = items.begin(); i != items.end(); i++)
     {
         bool fShouldReturnFalse = false;
@@ -170,20 +206,26 @@ bool parseWidecoinURI(const QUrl &uri, SendCoinsRecipient *out)
 
 bool parseWidecoinURI(QString uri, SendCoinsRecipient *out)
 {
+    // Convert widecoin:// to widecoin:
+    //
+    //    Cannot handle this later, because widecoin:// will cause Qt to see the part after // as host,
+    //    which will lower-case it (and thus invalidate the address).
+    if(uri.startsWith("widecoin://", Qt::CaseInsensitive))
+    {
+        uri.replace(0, 10, "widecoin:");
+    }
     QUrl uriInstance(uri);
     return parseWidecoinURI(uriInstance, out);
 }
 
 QString formatWidecoinURI(const SendCoinsRecipient &info)
 {
-    bool bech_32 = info.address.startsWith(QString::fromStdString(Params().Bech32HRP() + "1"));
-
-    QString ret = QString("widecoin:%1").arg(bech_32 ? info.address.toUpper() : info.address);
+    QString ret = QString("widecoin:%1").arg(info.address);
     int paramCount = 0;
 
     if (info.amount)
     {
-        ret += QString("?amount=%1").arg(WidecoinUnits::format(WidecoinUnits::WCN, info.amount, false, WidecoinUnits::SeparatorStyle::NEVER));
+        ret += QString("?amount=%1").arg(WidecoinUnits::format(WidecoinUnits::WCN, info.amount, false, WidecoinUnits::separatorNever));
         paramCount++;
     }
 
@@ -204,17 +246,21 @@ QString formatWidecoinURI(const SendCoinsRecipient &info)
     return ret;
 }
 
-bool isDust(interfaces::Node& node, const QString& address, const CAmount& amount)
+bool isDust(const QString& address, const CAmount& amount)
 {
     CTxDestination dest = DecodeDestination(address.toStdString());
     CScript script = GetScriptForDestination(dest);
     CTxOut txOut(amount, script);
-    return IsDust(txOut, node.getDustRelayFee());
+    return IsDust(txOut, ::dustRelayFee);
 }
 
 QString HtmlEscape(const QString& str, bool fMultiLine)
 {
+#if QT_VERSION < 0x050000
+    QString escaped = Qt::escape(str);
+#else
     QString escaped = str.toHtmlEscaped();
+#endif
     if(fMultiLine)
     {
         escaped = escaped.replace("\n", "<br>\n");
@@ -227,7 +273,7 @@ QString HtmlEscape(const std::string& str, bool fMultiLine)
     return HtmlEscape(QString::fromStdString(str), fMultiLine);
 }
 
-void copyEntryData(const QAbstractItemView *view, int column, int role)
+void copyEntryData(QAbstractItemView *view, int column, int role)
 {
     if(!view || !view->selectionModel())
         return;
@@ -240,23 +286,11 @@ void copyEntryData(const QAbstractItemView *view, int column, int role)
     }
 }
 
-QList<QModelIndex> getEntryData(const QAbstractItemView *view, int column)
+QList<QModelIndex> getEntryData(QAbstractItemView *view, int column)
 {
     if(!view || !view->selectionModel())
         return QList<QModelIndex>();
     return view->selectionModel()->selectedRows(column);
-}
-
-bool hasEntryData(const QAbstractItemView *view, int column, int role)
-{
-    QModelIndexList selection = getEntryData(view, column);
-    if (selection.isEmpty()) return false;
-    return !selection.at(0).data(role).toString().isEmpty();
-}
-
-QString getDefaultDataDirectory()
-{
-    return boostPathToQString(GetDefaultDataDir());
 }
 
 QString getSaveFileName(QWidget *parent, const QString &caption, const QString &dir,
@@ -267,7 +301,11 @@ QString getSaveFileName(QWidget *parent, const QString &caption, const QString &
     QString myDir;
     if(dir.isEmpty()) // Default to user documents location
     {
+#if QT_VERSION < 0x050000
+        myDir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+#else
         myDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+#endif
     }
     else
     {
@@ -313,7 +351,11 @@ QString getOpenFileName(QWidget *parent, const QString &caption, const QString &
     QString myDir;
     if(dir.isEmpty()) // Default to user documents location
     {
+#if QT_VERSION < 0x050000
+        myDir = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+#else
         myDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+#endif
     }
     else
     {
@@ -352,7 +394,7 @@ bool checkPoint(const QPoint &p, const QWidget *w)
 {
     QWidget *atW = QApplication::widgetAt(w->mapToGlobal(p));
     if (!atW) return false;
-    return atW->window() == w;
+    return atW->topLevelWidget() == w;
 }
 
 bool isObscured(QWidget *w)
@@ -362,29 +404,6 @@ bool isObscured(QWidget *w)
         && checkPoint(QPoint(0, w->height() - 1), w)
         && checkPoint(QPoint(w->width() - 1, w->height() - 1), w)
         && checkPoint(QPoint(w->width() / 2, w->height() / 2), w));
-}
-
-void bringToFront(QWidget* w)
-{
-#ifdef Q_OS_MAC
-    ForceActivation();
-#endif
-
-    if (w) {
-        // activateWindow() (sometimes) helps with keyboard focus on Windows
-        if (w->isMinimized()) {
-            w->showNormal();
-        } else {
-            w->show();
-        }
-        w->activateWindow();
-        w->raise();
-    }
-}
-
-void handleCloseWindowShortcut(QWidget* w)
-{
-    QObject::connect(new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), w), &QShortcut::activated, w, &QWidget::close);
 }
 
 void openDebugLogfile()
@@ -398,26 +417,54 @@ void openDebugLogfile()
 
 bool openWidecoinConf()
 {
-    fs::path pathConfig = GetConfigFile(gArgs.GetArg("-conf", WIDECOIN_CONF_FILENAME));
+    boost::filesystem::path pathConfig = GetConfigFile(WIDECOIN_CONF_FILENAME);
 
     /* Create the file */
-    fsbridge::ofstream configFile(pathConfig, std::ios_base::app);
-
+    boost::filesystem::ofstream configFile(pathConfig, std::ios_base::app);
+    
     if (!configFile.good())
         return false;
-
+    
     configFile.close();
-
+    
     /* Open widecoin.conf with the associated application */
-    bool res = QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathConfig)));
-#ifdef Q_OS_MAC
-    // Workaround for macOS-specific behavior; see #15409.
-    if (!res) {
-        res = QProcess::startDetached("/usr/bin/open", QStringList{"-t", boostPathToQString(pathConfig)});
+    return QDesktopServices::openUrl(QUrl::fromLocalFile(boostPathToQString(pathConfig)));
+}
+
+void SubstituteFonts(const QString& language)
+{
+#if defined(Q_OS_MAC)
+// Background:
+// OSX's default font changed in 10.9 and Qt is unable to find it with its
+// usual fallback methods when building against the 10.7 sdk or lower.
+// The 10.8 SDK added a function to let it find the correct fallback font.
+// If this fallback is not properly loaded, some characters may fail to
+// render correctly.
+//
+// The same thing happened with 10.10. .Helvetica Neue DeskInterface is now default.
+//
+// Solution: If building with the 10.7 SDK or lower and the user's platform
+// is 10.9 or higher at runtime, substitute the correct font. This needs to
+// happen before the QApplication is created.
+#if defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_8
+    if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_8)
+    {
+        if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_9)
+            /* On a 10.9 - 10.9.x system */
+            QFont::insertSubstitution(".Lucida Grande UI", "Lucida Grande");
+        else
+        {
+            /* 10.10 or later system */
+            if (language == "zh_CN" || language == "zh_TW" || language == "zh_HK") // traditional or simplified Chinese
+              QFont::insertSubstitution(".Helvetica Neue DeskInterface", "Heiti SC");
+            else if (language == "ja") // Japanese
+              QFont::insertSubstitution(".Helvetica Neue DeskInterface", "Songti SC");
+            else
+              QFont::insertSubstitution(".Helvetica Neue DeskInterface", "Lucida Grande");
+        }
     }
 #endif
-
-    return res;
+#endif
 }
 
 ToolTipToRichTextFilter::ToolTipToRichTextFilter(int _size_threshold, QObject *parent) :
@@ -445,46 +492,28 @@ bool ToolTipToRichTextFilter::eventFilter(QObject *obj, QEvent *evt)
     return QObject::eventFilter(obj, evt);
 }
 
-LabelOutOfFocusEventFilter::LabelOutOfFocusEventFilter(QObject* parent)
-    : QObject(parent)
-{
-}
-
-bool LabelOutOfFocusEventFilter::eventFilter(QObject* watched, QEvent* event)
-{
-    if (event->type() == QEvent::FocusOut) {
-        auto focus_out = static_cast<QFocusEvent*>(event);
-        if (focus_out->reason() != Qt::PopupFocusReason) {
-            auto label = qobject_cast<QLabel*>(watched);
-            if (label) {
-                auto flags = label->textInteractionFlags();
-                label->setTextInteractionFlags(Qt::NoTextInteraction);
-                label->setTextInteractionFlags(flags);
-            }
-        }
-    }
-
-    return QObject::eventFilter(watched, event);
-}
-
 void TableViewLastColumnResizingFixer::connectViewHeadersSignals()
 {
-    connect(tableView->horizontalHeader(), &QHeaderView::sectionResized, this, &TableViewLastColumnResizingFixer::on_sectionResized);
-    connect(tableView->horizontalHeader(), &QHeaderView::geometriesChanged, this, &TableViewLastColumnResizingFixer::on_geometriesChanged);
+    connect(tableView->horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(on_sectionResized(int,int,int)));
+    connect(tableView->horizontalHeader(), SIGNAL(geometriesChanged()), this, SLOT(on_geometriesChanged()));
 }
 
 // We need to disconnect these while handling the resize events, otherwise we can enter infinite loops.
 void TableViewLastColumnResizingFixer::disconnectViewHeadersSignals()
 {
-    disconnect(tableView->horizontalHeader(), &QHeaderView::sectionResized, this, &TableViewLastColumnResizingFixer::on_sectionResized);
-    disconnect(tableView->horizontalHeader(), &QHeaderView::geometriesChanged, this, &TableViewLastColumnResizingFixer::on_geometriesChanged);
+    disconnect(tableView->horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(on_sectionResized(int,int,int)));
+    disconnect(tableView->horizontalHeader(), SIGNAL(geometriesChanged()), this, SLOT(on_geometriesChanged()));
 }
 
 // Setup the resize mode, handles compatibility for Qt5 and below as the method signatures changed.
 // Refactored here for readability.
 void TableViewLastColumnResizingFixer::setViewHeaderResizeMode(int logicalIndex, QHeaderView::ResizeMode resizeMode)
 {
+#if QT_VERSION < 0x050000
+    tableView->horizontalHeader()->setResizeMode(logicalIndex, resizeMode);
+#else
     tableView->horizontalHeader()->setSectionResizeMode(logicalIndex, resizeMode);
+#endif
 }
 
 void TableViewLastColumnResizingFixer::resizeColumn(int nColumnIndex, int width)
@@ -584,7 +613,7 @@ TableViewLastColumnResizingFixer::TableViewLastColumnResizingFixer(QTableView* t
 #ifdef WIN32
 fs::path static StartupShortcutPath()
 {
-    std::string chain = gArgs.GetChainName();
+    std::string chain = ChainNameFromCommandLine();
     if (chain == CBaseChainParams::MAIN)
         return GetSpecialFolderPath(CSIDL_STARTUP) / "Widecoin.lnk";
     if (chain == CBaseChainParams::TESTNET) // Remove this special case when CBaseChainParams::TESTNET = "testnet4"
@@ -608,28 +637,40 @@ bool SetStartOnSystemStartup(bool fAutoStart)
         CoInitialize(nullptr);
 
         // Get a pointer to the IShellLink interface.
-        IShellLinkW* psl = nullptr;
+        IShellLink* psl = nullptr;
         HRESULT hres = CoCreateInstance(CLSID_ShellLink, nullptr,
-            CLSCTX_INPROC_SERVER, IID_IShellLinkW,
+            CLSCTX_INPROC_SERVER, IID_IShellLink,
             reinterpret_cast<void**>(&psl));
 
         if (SUCCEEDED(hres))
         {
             // Get the current executable path
-            WCHAR pszExePath[MAX_PATH];
-            GetModuleFileNameW(nullptr, pszExePath, ARRAYSIZE(pszExePath));
+            TCHAR pszExePath[MAX_PATH];
+            GetModuleFileName(nullptr, pszExePath, sizeof(pszExePath));
 
             // Start client minimized
             QString strArgs = "-min";
             // Set -testnet /-regtest options
-            strArgs += QString::fromStdString(strprintf(" -chain=%s", gArgs.GetChainName()));
+            strArgs += QString::fromStdString(strprintf(" -testnet=%d -regtest=%d", gArgs.GetBoolArg("-testnet", false), gArgs.GetBoolArg("-regtest", false)));
+
+#ifdef UNICODE
+            boost::scoped_array<TCHAR> args(new TCHAR[strArgs.length() + 1]);
+            // Convert the QString to TCHAR*
+            strArgs.toWCharArray(args.get());
+            // Add missing '\0'-termination to string
+            args[strArgs.length()] = '\0';
+#endif
 
             // Set the path to the shortcut target
             psl->SetPath(pszExePath);
-            PathRemoveFileSpecW(pszExePath);
+            PathRemoveFileSpec(pszExePath);
             psl->SetWorkingDirectory(pszExePath);
             psl->SetShowCmd(SW_SHOWMINNOACTIVE);
-            psl->SetArguments(strArgs.toStdWString().c_str());
+#ifndef UNICODE
+            psl->SetArguments(strArgs.toStdString().c_str());
+#else
+            psl->SetArguments(args.get());
+#endif
 
             // Query IShellLink for the IPersistFile interface for
             // saving the shortcut in persistent storage.
@@ -637,8 +678,11 @@ bool SetStartOnSystemStartup(bool fAutoStart)
             hres = psl->QueryInterface(IID_IPersistFile, reinterpret_cast<void**>(&ppf));
             if (SUCCEEDED(hres))
             {
+                WCHAR pwsz[MAX_PATH];
+                // Ensure that the string is ANSI.
+                MultiByteToWideChar(CP_ACP, 0, StartupShortcutPath().string().c_str(), -1, pwsz, MAX_PATH);
                 // Save the link by calling IPersistFile::Save.
-                hres = ppf->Save(StartupShortcutPath().wstring().c_str(), TRUE);
+                hres = ppf->Save(pwsz, TRUE);
                 ppf->Release();
                 psl->Release();
                 CoUninitialize();
@@ -667,15 +711,15 @@ fs::path static GetAutostartDir()
 
 fs::path static GetAutostartFilePath()
 {
-    std::string chain = gArgs.GetChainName();
+    std::string chain = ChainNameFromCommandLine();
     if (chain == CBaseChainParams::MAIN)
         return GetAutostartDir() / "widecoin.desktop";
-    return GetAutostartDir() / strprintf("widecoin-%s.desktop", chain);
+    return GetAutostartDir() / strprintf("widecoin-%s.lnk", chain);
 }
 
 bool GetStartOnSystemStartup()
 {
-    fsbridge::ifstream optionFile(GetAutostartFilePath());
+    fs::ifstream optionFile(GetAutostartFilePath());
     if (!optionFile.good())
         return false;
     // Scan through file for "Hidden=true":
@@ -706,10 +750,10 @@ bool SetStartOnSystemStartup(bool fAutoStart)
 
         fs::create_directories(GetAutostartDir());
 
-        fsbridge::ofstream optionFile(GetAutostartFilePath(), std::ios_base::out | std::ios_base::trunc);
+        fs::ofstream optionFile(GetAutostartFilePath(), std::ios_base::out|std::ios_base::trunc);
         if (!optionFile.good())
             return false;
-        std::string chain = gArgs.GetChainName();
+        std::string chain = ChainNameFromCommandLine();
         // Write a widecoin.desktop file to the autostart directory:
         optionFile << "[Desktop Entry]\n";
         optionFile << "Type=Application\n";
@@ -717,7 +761,7 @@ bool SetStartOnSystemStartup(bool fAutoStart)
             optionFile << "Name=Widecoin\n";
         else
             optionFile << strprintf("Name=Widecoin (%s)\n", chain);
-        optionFile << "Exec=" << pszExePath << strprintf(" -min -chain=%s\n", chain);
+        optionFile << "Exec=" << pszExePath << strprintf(" -min -testnet=%d -regtest=%d\n", gArgs.GetBoolArg("-testnet", false), gArgs.GetBoolArg("-regtest", false));
         optionFile << "Terminal=false\n";
         optionFile << "Hidden=false\n";
         optionFile.close();
@@ -725,6 +769,92 @@ bool SetStartOnSystemStartup(bool fAutoStart)
     return true;
 }
 
+
+#elif defined(Q_OS_MAC)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+// based on: https://github.com/Mozketo/LaunchAtLoginController/blob/master/LaunchAtLoginController.m
+
+#include <CoreFoundation/CoreFoundation.h>
+#include <CoreServices/CoreServices.h>
+
+LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl);
+LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl)
+{
+    CFArrayRef listSnapshot = LSSharedFileListCopySnapshot(list, nullptr);
+    if (listSnapshot == nullptr) {
+        return nullptr;
+    }
+    
+    // loop through the list of startup items and try to find the widecoin app
+    for(int i = 0; i < CFArrayGetCount(listSnapshot); i++) {
+        LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(listSnapshot, i);
+        UInt32 resolutionFlags = kLSSharedFileListNoUserInteraction | kLSSharedFileListDoNotMountVolumes;
+        CFURLRef currentItemURL = nullptr;
+
+#if defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= 10100
+        if(&LSSharedFileListItemCopyResolvedURL)
+            currentItemURL = LSSharedFileListItemCopyResolvedURL(item, resolutionFlags, nullptr);
+#if defined(MAC_OS_X_VERSION_MIN_REQUIRED) && MAC_OS_X_VERSION_MIN_REQUIRED < 10100
+        else
+            LSSharedFileListItemResolve(item, resolutionFlags, &currentItemURL, nullptr);
+#endif
+#else
+        LSSharedFileListItemResolve(item, resolutionFlags, &currentItemURL, nullptr);
+#endif
+
+        if(currentItemURL) {
+            if (CFEqual(currentItemURL, findUrl)) {
+                // found
+                CFRelease(listSnapshot);
+                CFRelease(currentItemURL);
+                return item;
+            }
+            CFRelease(currentItemURL);
+        }
+    }
+    
+    CFRelease(listSnapshot);
+    return nullptr;
+}
+
+bool GetStartOnSystemStartup()
+{
+    CFURLRef widecoinAppUrl = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+    if (widecoinAppUrl == nullptr) {
+        return false;
+    }
+    
+    LSSharedFileListRef loginItems = LSSharedFileListCreate(nullptr, kLSSharedFileListSessionLoginItems, nullptr);
+    LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, widecoinAppUrl);
+
+    CFRelease(widecoinAppUrl);
+    return !!foundItem; // return boolified object
+}
+
+bool SetStartOnSystemStartup(bool fAutoStart)
+{
+    CFURLRef widecoinAppUrl = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+    if (widecoinAppUrl == nullptr) {
+        return false;
+    }
+    
+    LSSharedFileListRef loginItems = LSSharedFileListCreate(nullptr, kLSSharedFileListSessionLoginItems, nullptr);
+    LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, widecoinAppUrl);
+
+    if(fAutoStart && !foundItem) {
+        // add widecoin app to startup item list
+        LSSharedFileListInsertItemURL(loginItems, kLSSharedFileListItemBeforeFirst, nullptr, nullptr, widecoinAppUrl, nullptr, nullptr);
+    }
+    else if(!fAutoStart && foundItem) {
+        // remove item
+        LSSharedFileListItemRemove(loginItems, foundItem);
+    }
+    
+    CFRelease(widecoinAppUrl);
+    return true;
+}
+#pragma GCC diagnostic pop
 #else
 
 bool GetStartOnSystemStartup() { return false; }
@@ -740,12 +870,12 @@ void setClipboard(const QString& str)
 
 fs::path qstringToBoostPath(const QString &path)
 {
-    return fs::path(path.toStdString());
+    return fs::path(path.toStdString(), utf8);
 }
 
 QString boostPathToQString(const fs::path &path)
 {
-    return QString::fromStdString(path.string());
+    return QString::fromStdString(path.string(utf8));
 }
 
 QString formatDurationStr(int secs)
@@ -772,8 +902,32 @@ QString formatServicesStr(quint64 mask)
 {
     QStringList strList;
 
-    for (const auto& flag : serviceFlagsToStr(mask)) {
-        strList.append(QString::fromStdString(flag));
+    // Just scan the last 8 bits for now.
+    for (int i = 0; i < 8; i++) {
+        uint64_t check = 1 << i;
+        if (mask & check)
+        {
+            switch (check)
+            {
+            case NODE_NETWORK:
+                strList.append("NETWORK");
+                break;
+            case NODE_GETUTXO:
+                strList.append("GETUTXO");
+                break;
+            case NODE_BLOOM:
+                strList.append("BLOOM");
+                break;
+            case NODE_WITNESS:
+                strList.append("WITNESS");
+                break;
+            case NODE_XTHIN:
+                strList.append("XTHIN");
+                break;
+            default:
+                strList.append(QString("%1[%2]").arg("UNKNOWN").arg(check));
+            }
+        }
     }
 
     if (strList.size())
@@ -782,9 +936,9 @@ QString formatServicesStr(quint64 mask)
         return QObject::tr("None");
 }
 
-QString formatPingTime(int64_t ping_usec)
+QString formatPingTime(double dPingTime)
 {
-    return (ping_usec == std::numeric_limits<int64_t>::max() || ping_usec == 0) ? QObject::tr("N/A") : QString(QObject::tr("%1 ms")).arg(QString::number((int)(ping_usec / 1000), 10));
+    return (dPingTime == std::numeric_limits<int64_t>::max()/1e6 || dPingTime == 0) ? QObject::tr("N/A") : QString(QObject::tr("%1 ms")).arg(QString::number((int)(dPingTime * 1000), 10));
 }
 
 QString formatTimeOffset(int64_t nTimeOffset)
@@ -845,7 +999,7 @@ qreal calculateIdealFontSize(int width, const QString& text, QFont font, qreal m
     while(font_size >= minPointSize) {
         font.setPointSizeF(font_size);
         QFontMetrics fm(font);
-        if (TextWidth(fm, text) < width) {
+        if (fm.width(text) < width) {
             break;
         }
         font_size -= 0.5;
@@ -857,67 +1011,10 @@ void ClickableLabel::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_EMIT clicked(event->pos());
 }
-
+    
 void ClickableProgressBar::mouseReleaseEvent(QMouseEvent *event)
 {
     Q_EMIT clicked(event->pos());
-}
-
-bool ItemDelegate::eventFilter(QObject *object, QEvent *event)
-{
-    if (event->type() == QEvent::KeyPress) {
-        if (static_cast<QKeyEvent*>(event)->key() == Qt::Key_Escape) {
-            Q_EMIT keyEscapePressed();
-        }
-    }
-    return QItemDelegate::eventFilter(object, event);
-}
-
-void PolishProgressDialog(QProgressDialog* dialog)
-{
-#ifdef Q_OS_MAC
-    // Workaround for macOS-only Qt bug; see: QTBUG-65750, QTBUG-70357.
-    const int margin = TextWidth(dialog->fontMetrics(), ("X"));
-    dialog->resize(dialog->width() + 2 * margin, dialog->height());
-    dialog->show();
-#else
-    Q_UNUSED(dialog);
-#endif
-}
-
-int TextWidth(const QFontMetrics& fm, const QString& text)
-{
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
-    return fm.horizontalAdvance(text);
-#else
-    return fm.width(text);
-#endif
-}
-
-void LogQtInfo()
-{
-#ifdef QT_STATIC
-    const std::string qt_link{"static"};
-#else
-    const std::string qt_link{"dynamic"};
-#endif
-#ifdef QT_STATICPLUGIN
-    const std::string plugin_link{"static"};
-#else
-    const std::string plugin_link{"dynamic"};
-#endif
-    LogPrintf("Qt %s (%s), plugin=%s (%s)\n", qVersion(), qt_link, QGuiApplication::platformName().toStdString(), plugin_link);
-    LogPrintf("System: %s, %s\n", QSysInfo::prettyProductName().toStdString(), QSysInfo::buildAbi().toStdString());
-    for (const QScreen* s : QGuiApplication::screens()) {
-        LogPrintf("Screen: %s %dx%d, pixel ratio=%.1f\n", s->name().toStdString(), s->size().width(), s->size().height(), s->devicePixelRatio());
-    }
-}
-
-void PopupMenu(QMenu* menu, const QPoint& point, QAction* at_action)
-{
-    // The qminimal plugin does not provide window system integration.
-    if (QApplication::platformName() == "minimal") return;
-    menu->popup(point, at_action);
 }
 
 } // namespace GUIUtil

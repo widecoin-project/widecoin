@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2016-2020 The Widecoin Core developers
+# Copyright (c) 2016-2017 The Widecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,36 +15,35 @@ import os
 ################################################################################
 
 EXCLUDE = [
+    # libsecp256k1:
+    'src/secp256k1/include/secp256k1.h',
+    'src/secp256k1/include/secp256k1_ecdh.h',
+    'src/secp256k1/include/secp256k1_recovery.h',
+    'src/secp256k1/include/secp256k1_schnorr.h',
+    'src/secp256k1/src/java/org_widecoin_NativeSecp256k1.c',
+    'src/secp256k1/src/java/org_widecoin_NativeSecp256k1.h',
+    'src/secp256k1/src/java/org_widecoin_Secp256k1Context.c',
+    'src/secp256k1/src/java/org_widecoin_Secp256k1Context.h',
+    # univalue:
+    'src/univalue/test/object.cpp',
+    'src/univalue/lib/univalue_escapes.h',
     # auto generated:
     'src/qt/widecoinstrings.cpp',
     'src/chainparamsseeds.h',
     # other external copyrights:
-    'src/reverse_iterator.h',
-    'src/test/fuzz/FuzzedDataProvider.h',
     'src/tinyformat.h',
-    'src/bench/nanobench.h',
+    'src/leveldb/util/env_win.cc',
+    'src/crypto/ctaes/bench.c',
     'test/functional/test_framework/bignum.py',
     # python init:
     '*__init__.py',
 ]
 EXCLUDE_COMPILED = re.compile('|'.join([fnmatch.translate(m) for m in EXCLUDE]))
 
-EXCLUDE_DIRS = [
-    # git subtrees
-    "src/crypto/ctaes/",
-    "src/leveldb/",
-    "src/secp256k1/",
-    "src/univalue/",
-    "src/crc32c/",
-]
-
-INCLUDE = ['*.h', '*.cpp', '*.cc', '*.c', '*.mm', '*.py', '*.sh', '*.bash-completion']
+INCLUDE = ['*.h', '*.cpp', '*.cc', '*.c', '*.py']
 INCLUDE_COMPILED = re.compile('|'.join([fnmatch.translate(m) for m in INCLUDE]))
 
 def applies_to_file(filename):
-    for excluded_dir in EXCLUDE_DIRS:
-        if filename.startswith(excluded_dir):
-            return False
     return ((EXCLUDE_COMPILED.match(filename) is None) and
             (INCLUDE_COMPILED.match(filename) is not None))
 
@@ -52,22 +51,15 @@ def applies_to_file(filename):
 # obtain list of files in repo according to INCLUDE and EXCLUDE
 ################################################################################
 
-GIT_LS_CMD = 'git ls-files --full-name'.split(' ')
-GIT_TOPLEVEL_CMD = 'git rev-parse --show-toplevel'.split(' ')
+GIT_LS_CMD = 'git ls-files'
 
-def call_git_ls(base_directory):
-    out = subprocess.check_output([*GIT_LS_CMD, base_directory])
+def call_git_ls():
+    out = subprocess.check_output(GIT_LS_CMD.split(' '))
     return [f for f in out.decode("utf-8").split('\n') if f != '']
 
-def call_git_toplevel():
-    "Returns the absolute path to the project root"
-    return subprocess.check_output(GIT_TOPLEVEL_CMD).strip().decode("utf-8")
-
-def get_filenames_to_examine(base_directory):
-    "Returns an array of absolute paths to any project files in the base_directory that pass the include/exclude filters"
-    root = call_git_toplevel()
-    filenames = call_git_ls(base_directory)
-    return sorted([os.path.join(root, filename) for filename in filenames if
+def get_filenames_to_examine():
+    filenames = call_git_ls()
+    return sorted([filename for filename in filenames if
                    applies_to_file(filename)])
 
 ################################################################################
@@ -75,7 +67,7 @@ def get_filenames_to_examine(base_directory):
 ################################################################################
 
 
-COPYRIGHT_WITH_C = r'Copyright \(c\)'
+COPYRIGHT_WITH_C = 'Copyright \(c\)'
 COPYRIGHT_WITHOUT_C = 'Copyright'
 ANY_COPYRIGHT_STYLE = '(%s|%s)' % (COPYRIGHT_WITH_C, COPYRIGHT_WITHOUT_C)
 
@@ -89,21 +81,32 @@ ANY_COPYRIGHT_STYLE_OR_YEAR_STYLE = ("%s %s" % (ANY_COPYRIGHT_STYLE,
 ANY_COPYRIGHT_COMPILED = re.compile(ANY_COPYRIGHT_STYLE_OR_YEAR_STYLE)
 
 def compile_copyright_regex(copyright_style, year_style, name):
-    return re.compile(r'%s %s,? %s( +\*)?\n' % (copyright_style, year_style, name))
+    return re.compile('%s %s %s' % (copyright_style, year_style, name))
 
 EXPECTED_HOLDER_NAMES = [
-    r"Satoshi Nakamoto",
-    r"The Widecoin Core developers",
-    r"BitPay Inc\.",
-    r"University of Illinois at Urbana-Champaign\.",
-    r"Pieter Wuille",
-    r"Wladimir J\. van der Laan",
-    r"Jeff Garzik",
-    r"Jan-Klaas Kollhof",
-    r"ArtForz -- public domain half-a-node",
-    r"Intel Corporation ?",
-    r"The Zcash developers",
-    r"Jeremy Rubin",
+    "Satoshi Nakamoto\n",
+    "The Widecoin Core developers\n",
+    "The Widecoin Core developers \n",
+    "Widecoin Core Developers\n",
+    "the Widecoin Core developers\n",
+    "The Widecoin developers\n",
+    "The LevelDB Authors\. All rights reserved\.\n",
+    "BitPay Inc\.\n",
+    "BitPay, Inc\.\n",
+    "University of Illinois at Urbana-Champaign\.\n",
+    "MarcoFalke\n",
+    "Pieter Wuille\n",
+    "Pieter Wuille +\*\n",
+    "Pieter Wuille, Gregory Maxwell +\*\n",
+    "Pieter Wuille, Andrew Poelstra +\*\n",
+    "Andrew Poelstra +\*\n",
+    "Wladimir J. van der Laan\n",
+    "Jeff Garzik\n",
+    "Diederik Huys, Pieter Wuille +\*\n",
+    "Thomas Daede, Cory Fields +\*\n",
+    "Jan-Klaas Kollhof\n",
+    "Sam Rushing\n",
+    "ArtForz -- public domain half-a-node\n",
 ]
 
 DOMINANT_STYLE_COMPILED = {}
@@ -143,7 +146,7 @@ def file_has_without_c_style_copyright_for_holder(contents, holder_name):
 ################################################################################
 
 def read_file(filename):
-    return open(filename, 'r', encoding="utf8").read()
+    return open(os.path.abspath(filename), 'r').read()
 
 def gather_file_info(filename):
     info = {}
@@ -257,9 +260,12 @@ def print_report(file_infos, verbose):
     print(SEPARATOR)
 
 def exec_report(base_directory, verbose):
-    filenames = get_filenames_to_examine(base_directory)
+    original_cwd = os.getcwd()
+    os.chdir(base_directory)
+    filenames = get_filenames_to_examine()
     file_infos = [gather_file_info(f) for f in filenames]
     print_report(file_infos, verbose)
+    os.chdir(original_cwd)
 
 ################################################################################
 # report cmd
@@ -280,7 +286,7 @@ Arguments:
 def report_cmd(argv):
     if len(argv) == 2:
         sys.exit(REPORT_USAGE)
-
+        
     base_directory = argv[2]
     if not os.path.exists(base_directory):
         sys.exit("*** bad <base_directory>: %s" % base_directory)
@@ -319,13 +325,13 @@ def get_most_recent_git_change_year(filename):
 ################################################################################
 
 def read_file_lines(filename):
-    f = open(filename, 'r', encoding="utf8")
+    f = open(os.path.abspath(filename), 'r')
     file_lines = f.readlines()
     f.close()
     return file_lines
 
 def write_file_lines(filename, file_lines):
-    f = open(filename, 'w', encoding="utf8")
+    f = open(os.path.abspath(filename), 'w')
     f.write(''.join(file_lines))
     f.close()
 
@@ -333,7 +339,7 @@ def write_file_lines(filename, file_lines):
 # update header years execution
 ################################################################################
 
-COPYRIGHT = r'Copyright \(c\)'
+COPYRIGHT = 'Copyright \(c\)'
 YEAR = "20[0-9][0-9]"
 YEAR_RANGE = '(%s)(-%s)?' % (YEAR, YEAR)
 HOLDER = 'The Widecoin Core developers'
@@ -393,8 +399,11 @@ def update_updatable_copyright(filename):
                               "Copyright updated! -> %s" % last_git_change_year)
 
 def exec_update_header_year(base_directory):
-    for filename in get_filenames_to_examine(base_directory):
+    original_cwd = os.getcwd()
+    os.chdir(base_directory)
+    for filename in get_filenames_to_examine():
         update_updatable_copyright(filename)
+    os.chdir(original_cwd)
 
 ################################################################################
 # update cmd
@@ -435,7 +444,7 @@ def print_file_action_message(filename, action):
 def update_cmd(argv):
     if len(argv) != 3:
         sys.exit(UPDATE_USAGE)
-
+    
     base_directory = argv[2]
     if not os.path.exists(base_directory):
         sys.exit("*** bad base_directory: %s" % base_directory)
@@ -459,14 +468,14 @@ CPP_HEADER = '''
 def get_cpp_header_lines_to_insert(start_year, end_year):
     return reversed(get_header_lines(CPP_HEADER, start_year, end_year))
 
-SCRIPT_HEADER = '''
+PYTHON_HEADER = '''
 # Copyright (c) %s The Widecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 '''
 
-def get_script_header_lines_to_insert(start_year, end_year):
-    return reversed(get_header_lines(SCRIPT_HEADER, start_year, end_year))
+def get_python_header_lines_to_insert(start_year, end_year):
+    return reversed(get_header_lines(PYTHON_HEADER, start_year, end_year))
 
 ################################################################################
 # query git for year of last change
@@ -482,7 +491,7 @@ def get_git_change_year_range(filename):
 
 def file_already_has_core_copyright(file_lines):
     index, _ = get_updatable_copyright_line(file_lines)
-    return index is not None
+    return index != None
 
 ################################################################################
 # insert header execution
@@ -495,18 +504,17 @@ def file_has_hashbang(file_lines):
         return False
     return file_lines[0][:2] == '#!'
 
-def insert_script_header(filename, file_lines, start_year, end_year):
+def insert_python_header(filename, file_lines, start_year, end_year):
     if file_has_hashbang(file_lines):
-        insert_idx = 1
+        insert_idx = 1 
     else:
         insert_idx = 0
-    header_lines = get_script_header_lines_to_insert(start_year, end_year)
+    header_lines = get_python_header_lines_to_insert(start_year, end_year)
     for line in header_lines:
         file_lines.insert(insert_idx, line)
     write_file_lines(filename, file_lines)
 
 def insert_cpp_header(filename, file_lines, start_year, end_year):
-    file_lines.insert(0, '\n')
     header_lines = get_cpp_header_lines_to_insert(start_year, end_year)
     for line in header_lines:
         file_lines.insert(0, line)
@@ -518,8 +526,8 @@ def exec_insert_header(filename, style):
         sys.exit('*** %s already has a copyright by The Widecoin Core developers'
                  % (filename))
     start_year, end_year = get_git_change_year_range(filename)
-    if style in ['python', 'shell']:
-        insert_script_header(filename, file_lines, start_year, end_year)
+    if style == 'python':
+        insert_python_header(filename, file_lines, start_year, end_year)
     else:
         insert_cpp_header(filename, file_lines, start_year, end_year)
 
@@ -560,17 +568,15 @@ def insert_cmd(argv):
     if not os.path.isfile(filename):
         sys.exit("*** bad filename: %s" % filename)
     _, extension = os.path.splitext(filename)
-    if extension not in ['.h', '.cpp', '.cc', '.c', '.py', '.sh']:
+    if extension not in ['.h', '.cpp', '.cc', '.c', '.py']:
         sys.exit("*** cannot insert for file extension %s" % extension)
-
-    if extension == '.py':
+   
+    if extension == '.py': 
         style = 'python'
-    elif extension == '.sh':
-        style = 'shell'
     else:
         style = 'cpp'
     exec_insert_header(filename, style)
-
+         
 ################################################################################
 # UI
 ################################################################################

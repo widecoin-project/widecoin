@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2019 The Widecoin Core developers
+// Copyright (c) 2011-2015 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -22,7 +22,10 @@ public:
     QString getURI();
 
 protected Q_SLOTS:
-    void accept() override;
+    void accept();
+
+private Q_SLOTS:
+    void on_selectFileButton_clicked();
 
 private:
     Ui::OpenURIDialog *ui;

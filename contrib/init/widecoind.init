@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
 #  widecoind The widecoin core server.
 #
@@ -39,7 +39,7 @@ start() {
 
 stop() {
     echo -n $"Stopping $prog: "
-    killproc $prog -t600
+    killproc $prog
     RETVAL=$?
     echo
     [ $RETVAL -eq 0 ] && rm -f $lockfile

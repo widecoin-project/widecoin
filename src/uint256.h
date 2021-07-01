@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2019 The Widecoin Core developers
+// Copyright (c) 2009-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,9 +8,11 @@
 
 #include <assert.h>
 #include <cstring>
+#include <stdexcept>
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <crypto/common.h>
 
 /** Template base class for fixed-sized opaque blobs. */
 template<unsigned int BITS>
@@ -18,30 +20,29 @@ class base_blob
 {
 protected:
     static constexpr int WIDTH = BITS / 8;
-    uint8_t m_data[WIDTH];
+    uint8_t data[WIDTH];
 public:
-    /* construct 0 value by default */
-    constexpr base_blob() : m_data() {}
-
-    /* constructor for constants between 1 and 255 */
-    constexpr explicit base_blob(uint8_t v) : m_data{v} {}
+    base_blob()
+    {
+        memset(data, 0, sizeof(data));
+    }
 
     explicit base_blob(const std::vector<unsigned char>& vch);
 
     bool IsNull() const
     {
         for (int i = 0; i < WIDTH; i++)
-            if (m_data[i] != 0)
+            if (data[i] != 0)
                 return false;
         return true;
     }
 
     void SetNull()
     {
-        memset(m_data, 0, sizeof(m_data));
+        memset(data, 0, sizeof(data));
     }
 
-    inline int Compare(const base_blob& other) const { return memcmp(m_data, other.m_data, sizeof(m_data)); }
+    inline int Compare(const base_blob& other) const { return memcmp(data, other.data, sizeof(data)); }
 
     friend inline bool operator==(const base_blob& a, const base_blob& b) { return a.Compare(b) == 0; }
     friend inline bool operator!=(const base_blob& a, const base_blob& b) { return a.Compare(b) != 0; }
@@ -52,37 +53,34 @@ public:
     void SetHex(const std::string& str);
     std::string ToString() const;
 
-    const unsigned char* data() const { return m_data; }
-    unsigned char* data() { return m_data; }
-
     unsigned char* begin()
     {
-        return &m_data[0];
+        return &data[0];
     }
 
     unsigned char* end()
     {
-        return &m_data[WIDTH];
+        return &data[WIDTH];
     }
 
     const unsigned char* begin() const
     {
-        return &m_data[0];
+        return &data[0];
     }
 
     const unsigned char* end() const
     {
-        return &m_data[WIDTH];
+        return &data[WIDTH];
     }
 
     unsigned int size() const
     {
-        return sizeof(m_data);
+        return sizeof(data);
     }
 
     uint64_t GetUint64(int pos) const
     {
-        const uint8_t* ptr = m_data + pos * 8;
+        const uint8_t* ptr = data + pos * 8;
         return ((uint64_t)ptr[0]) | \
                ((uint64_t)ptr[1]) << 8 | \
                ((uint64_t)ptr[2]) << 16 | \
@@ -96,13 +94,13 @@ public:
     template<typename Stream>
     void Serialize(Stream& s) const
     {
-        s.write((char*)m_data, sizeof(m_data));
+        s.write((char*)data, sizeof(data));
     }
 
     template<typename Stream>
     void Unserialize(Stream& s)
     {
-        s.read((char*)m_data, sizeof(m_data));
+        s.read((char*)data, sizeof(data));
     }
 };
 
@@ -112,7 +110,7 @@ public:
  */
 class uint160 : public base_blob<160> {
 public:
-    constexpr uint160() {}
+    uint160() {}
     explicit uint160(const std::vector<unsigned char>& vch) : base_blob<160>(vch) {}
 };
 
@@ -123,11 +121,18 @@ public:
  */
 class uint256 : public base_blob<256> {
 public:
-    constexpr uint256() {}
-    constexpr explicit uint256(uint8_t v) : base_blob<256>(v) {}
+    uint256() {}
     explicit uint256(const std::vector<unsigned char>& vch) : base_blob<256>(vch) {}
-    static const uint256 ZERO;
-    static const uint256 ONE;
+
+    /** A cheap hash function that just returns 64 bits from the result, it can be
+     * used when the contents are considered uniformly random. It is not appropriate
+     * when the value can easily be influenced from outside as e.g. a network adversary could
+     * provide values to trigger worst-case behavior.
+     */
+    uint64_t GetCheapHash() const
+    {
+        return ReadLE64(data);
+    }
 };
 
 /* uint256 from const char *.

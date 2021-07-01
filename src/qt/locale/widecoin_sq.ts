@@ -22,24 +22,12 @@
         <translation>&amp;Kopjo</translation>
     </message>
     <message>
-        <source>C&amp;lose</source>
-        <translation>afer</translation>
-    </message>
-    <message>
         <source>Delete the currently selected address from the list</source>
         <translation>Fshi adresen e selektuar nga lista</translation>
     </message>
     <message>
-        <source>Enter address or label to search</source>
-        <translation>Vendos adresën ose etiketën për të kërkuar</translation>
-    </message>
-    <message>
         <source>Export the data in the current tab to a file</source>
         <translation>Eksporto të dhënat e skedës korrente në një skedar</translation>
-    </message>
-    <message>
-        <source>&amp;Export</source>
-        <translation>&amp;Eksporto</translation>
     </message>
     <message>
         <source>&amp;Delete</source>
@@ -70,9 +58,8 @@
         <translation>Këto janë Widecoin adresat e juaja për të dërguar pagesa. Gjithmon kontrolloni shumën dhe adresën pranuese para se të dërgoni monedha.</translation>
     </message>
     <message>
-        <source>These are your Widecoin addresses for receiving payments. Use the 'Create new receiving address' button in the receive tab to create new addresses.
-Signing is only possible with addresses of the type 'legacy'.</source>
-        <translation>Këto janë adresat tuaja të Widecoin për të marrë pagesa. Përdorni butonin 'Krijo adresë të re marrëse' në skedën e marrjes për të krijuar adresa të reja. Nënshkrimi është i mundur vetëm me adresa të tipit 'trashëgimi'.</translation>
+        <source>These are your Widecoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>Këto janë Widecoin adresat e juaja për të pranuar pagesa. Rekomandohet që gjithmon të përdorni një adresë të re për çdo transaksion.</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -121,10 +108,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
 <context>
     <name>AskPassphraseDialog</name>
     <message>
-        <source>Passphrase Dialog</source>
-        <translation>Dialog i Fjalëkalimit</translation>
-    </message>
-    <message>
         <source>Enter passphrase</source>
         <translation>Futni fjalëkalimin</translation>
     </message>
@@ -137,8 +120,8 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation>Përsërisni fjalëkalimin e ri</translation>
     </message>
     <message>
-        <source>Show passphrase</source>
-        <translation>Shfaqe fjalëkalimin</translation>
+        <source>Show password</source>
+        <translation>Trego fjalëkalimin</translation>
     </message>
     <message>
         <source>Encrypt wallet</source>
@@ -165,6 +148,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation>Ndrysho fjalëkalimin</translation>
     </message>
     <message>
+        <source>Enter the old passphrase and new passphrase to the wallet.</source>
+        <translation>Fusni fjalëkalimin e vjetër dhe fjalëkalimin e ri që të hapni portofolin.</translation>
+    </message>
+    <message>
         <source>Confirm wallet encryption</source>
         <translation>Konfirmoni enkriptimin e portofolit</translation>
     </message>
@@ -175,26 +162,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Wallet encrypted</source>
         <translation>Portofoli u enkriptua</translation>
-    </message>
-    <message>
-        <source>Enter the new passphrase for the wallet.&lt;br/&gt;Please use a passphrase of &lt;b&gt;ten or more random characters&lt;/b&gt;, or &lt;b&gt;eight or more words&lt;/b&gt;.</source>
-        <translation>Jepe fjalëkalimin e ri për portofolin. Ju lutemi të përdorni një fjalkalim prej dhjetë ose më shumë shkronjave të rëndomta, ose tetë e më shumë fjalë.</translation>
-    </message>
-    <message>
-        <source>Enter the old passphrase and new passphrase for the wallet.</source>
-        <translation>Jepe fjalëkalimin e vjetër dhe fjalkalimin e ri për portofolin.</translation>
-    </message>
-    <message>
-        <source>Wallet to be encrypted</source>
-        <translation>Portofoli që duhet të enkriptohet</translation>
-    </message>
-    <message>
-        <source>Your wallet is about to be encrypted. </source>
-        <translation>Portofoli juaj do të enkriptohet</translation>
-    </message>
-    <message>
-        <source>Your wallet is now encrypted. </source>
-        <translation>Portofoli juaj është i enkriptuar.</translation>
     </message>
     <message>
         <source>Wallet encryption failed</source>
@@ -251,16 +218,24 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation>Mbyllni aplikacionin</translation>
     </message>
     <message>
-        <source>Show information about Qt</source>
-        <translation>Shfaq informacion rreth Qt</translation>
-    </message>
-    <message>
         <source>&amp;Options...</source>
         <translation>&amp;Opsione</translation>
     </message>
     <message>
+        <source>&amp;Receiving addresses...</source>
+        <translation>Duke marr adresen</translation>
+    </message>
+    <message>
         <source>Change the passphrase used for wallet encryption</source>
         <translation>Ndrysho frazkalimin e përdorur per enkriptimin e portofolit</translation>
+    </message>
+    <message>
+        <source>Widecoin</source>
+        <translation>Widecoin</translation>
+    </message>
+    <message>
+        <source>Wallet</source>
+        <translation>Portofol</translation>
     </message>
     <message>
         <source>&amp;Send</source>
@@ -363,12 +338,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
     </context>
 <context>
-    <name>CreateWalletActivity</name>
-    </context>
-<context>
-    <name>CreateWalletDialog</name>
-    </context>
-<context>
     <name>EditAddressDialog</name>
     <message>
         <source>Edit Address</source>
@@ -383,6 +352,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation>&amp;Adresa</translation>
     </message>
     <message>
+        <source>New receiving address</source>
+        <translation>Adresë e re pritëse</translation>
+    </message>
+    <message>
         <source>New sending address</source>
         <translation>Adresë e re dërgimi</translation>
     </message>
@@ -393,6 +366,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Edit sending address</source>
         <translation>ndrysho adresën dërguese</translation>
+    </message>
+    <message>
+        <source>The entered address "%1" is already in the address book.</source>
+        <translation>Adresa e dhënë "%1" është e zënë në librin e adresave. </translation>
     </message>
     <message>
         <source>Could not unlock wallet.</source>
@@ -443,9 +420,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <name>OpenURIDialog</name>
     </context>
 <context>
-    <name>OpenWalletActivity</name>
-    </context>
-<context>
     <name>OptionsDialog</name>
     <message>
         <source>Options</source>
@@ -468,9 +442,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
     </context>
 <context>
-    <name>PSBTOperationsDialog</name>
-    </context>
-<context>
     <name>PaymentServer</name>
     </context>
 <context>
@@ -491,6 +462,9 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation>i/e panjohur</translation>
     </message>
 </context>
+<context>
+    <name>QObject::QObject</name>
+    </context>
 <context>
     <name>QRImageWidget</name>
     </context>
@@ -527,20 +501,24 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <source>Clear</source>
         <translation>Pastro</translation>
     </message>
-    <message>
-        <source>Could not unlock wallet.</source>
-        <translation>Nuk mund të ç'kyçet portofoli.</translation>
-    </message>
     </context>
 <context>
     <name>ReceiveRequestDialog</name>
     <message>
-        <source>Amount:</source>
-        <translation>Shuma:</translation>
-    </message>
-    <message>
         <source>Copy &amp;Address</source>
         <translation>&amp;Kopjo adresen</translation>
+    </message>
+    <message>
+        <source>Address</source>
+        <translation>Adresë</translation>
+    </message>
+    <message>
+        <source>Amount</source>
+        <translation>Sasia</translation>
+    </message>
+    <message>
+        <source>Label</source>
+        <translation>Etiketë</translation>
     </message>
     </context>
 <context>
@@ -627,6 +605,13 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <source>Pay To:</source>
         <translation>Paguaj drejt:</translation>
     </message>
+    <message>
+        <source>Enter a label for this address to add it to your address book</source>
+        <translation>Krijoni një etiketë për këtë adresë që t'ja shtoni librit të adresave</translation>
+    </message>
+</context>
+<context>
+    <name>SendConfirmationDialog</name>
     </context>
 <context>
     <name>ShutdownWindow</name>
@@ -647,6 +632,13 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </message>
     </context>
 <context>
+    <name>SplashScreen</name>
+    <message>
+        <source>[testnet]</source>
+        <translation>[testo rrjetin]</translation>
+    </message>
+</context>
+<context>
     <name>TrafficGraphWidget</name>
     </context>
 <context>
@@ -662,6 +654,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>%1 confirmations</source>
         <translation>%1 konfirmimet</translation>
+    </message>
+    <message>
+        <source>, has not been successfully broadcast yet</source>
+        <translation>, nuk është transmetuar me sukses deri tani</translation>
     </message>
     <message>
         <source>Date</source>
@@ -708,6 +704,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <message>
         <source>Confirmed (%1 confirmations)</source>
         <translation>I/E konfirmuar(%1 konfirmime)</translation>
+    </message>
+    <message>
+        <source>This block was not received by any other nodes and will probably not be accepted!</source>
+        <translation>Ky bllok është marrë nga ndonjë nyje dhe ka shumë mundësi të mos pranohet! </translation>
     </message>
     <message>
         <source>Generated but not accepted</source>
@@ -785,9 +785,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <name>UnitDisplayStatusBarControl</name>
     </context>
 <context>
-    <name>WalletController</name>
-    </context>
-<context>
     <name>WalletFrame</name>
     </context>
 <context>
@@ -800,20 +797,24 @@ Signing is only possible with addresses of the type 'legacy'.</source>
 <context>
     <name>WalletView</name>
     <message>
-        <source>&amp;Export</source>
-        <translation>&amp;Eksporto</translation>
-    </message>
-    <message>
         <source>Export the data in the current tab to a file</source>
         <translation>Eksporto të dhënat e skedës korrente në një skedar</translation>
-    </message>
-    <message>
-        <source>Error</source>
-        <translation>Problem</translation>
     </message>
     </context>
 <context>
     <name>widecoin-core</name>
+    <message>
+        <source>Options:</source>
+        <translation>Opsionet:</translation>
+    </message>
+    <message>
+        <source>Widecoin Core</source>
+        <translation>Berthama Widecoin</translation>
+    </message>
+    <message>
+        <source>Information</source>
+        <translation>Informacion</translation>
+    </message>
     <message>
         <source>Insufficient funds</source>
         <translation>Fonde te pamjaftueshme</translation>
@@ -822,5 +823,9 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <source>Rescanning...</source>
         <translation>Rikerkim</translation>
     </message>
-    </context>
+    <message>
+        <source>Error</source>
+        <translation>Problem</translation>
+    </message>
+</context>
 </TS>

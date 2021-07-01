@@ -9,9 +9,6 @@
 //
 // For more information, see BIP 173.
 
-#ifndef WIDECOIN_BECH32_H
-#define WIDECOIN_BECH32_H
-
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -19,12 +16,10 @@
 namespace bech32
 {
 
-/** Encode a Bech32 string. If hrp contains uppercase characters, this will cause an assertion error. */
+/** Encode a Bech32 string. Returns the empty string in case of failure. */
 std::string Encode(const std::string& hrp, const std::vector<uint8_t>& values);
 
 /** Decode a Bech32 string. Returns (hrp, data). Empty hrp means failure. */
 std::pair<std::string, std::vector<uint8_t>> Decode(const std::string& str);
 
 } // namespace bech32
-
-#endif // WIDECOIN_BECH32_H

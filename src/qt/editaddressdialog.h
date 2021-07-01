@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2018 The Widecoin Core developers
+// Copyright (c) 2011-2015 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -25,12 +25,13 @@ class EditAddressDialog : public QDialog
 
 public:
     enum Mode {
+        NewReceivingAddress,
         NewSendingAddress,
         EditReceivingAddress,
         EditSendingAddress
     };
 
-    explicit EditAddressDialog(Mode mode, QWidget *parent = nullptr);
+    explicit EditAddressDialog(Mode mode, QWidget *parent);
     ~EditAddressDialog();
 
     void setModel(AddressTableModel *model);
@@ -40,13 +41,10 @@ public:
     void setAddress(const QString &address);
 
 public Q_SLOTS:
-    void accept() override;
+    void accept();
 
 private:
     bool saveCurrentRow();
-
-    /** Return a descriptive string when adding an already-existing address fails. */
-    QString getDuplicateAddressWarning() const;
 
     Ui::EditAddressDialog *ui;
     QDataWidgetMapper *mapper;

@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-# Copyright (c) 2015-2019 The Widecoin Core developers
+# Copyright (c) 2015-2017 The Widecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test decoding scripts via decodescript RPC command."""
 
-from test_framework.messages import CTransaction, sha256
 from test_framework.test_framework import WidecoinTestFramework
-from test_framework.util import assert_equal, hex_str_to_bytes
-
+from test_framework.util import *
+from test_framework.mininode import *
 from io import BytesIO
 
 class DecodeScriptTest(WidecoinTestFramework):
@@ -51,11 +50,8 @@ class DecodeScriptTest(WidecoinTestFramework):
     def decodescript_script_pub_key(self):
         public_key = '03b0da749730dc9b4b1f4a14d6902877a92541f5368778853d9c4a0cb7802dcfb2'
         push_public_key = '21' + public_key
-        public_key_hash = '5dd1d3a048119c27b28293056724d9522f26d945'
+        public_key_hash = '11695b6cd891484c2d49ec5aa738ec2b2f897777'
         push_public_key_hash = '14' + public_key_hash
-        uncompressed_public_key = '04b0da749730dc9b4b1f4a14d6902877a92541f5368778853d9c4a0cb7802dcfb25e01fc8fde47c96c98a4f3a8123e33a38a50cf9025cc8c4494a518f991792bb7'
-        push_uncompressed_public_key = '41' + uncompressed_public_key
-        p2wsh_p2pk_script_hash = 'd8590cf8ea0674cf3d49fd7ca249b85ef7485dea62c138468bddeb20cd6519f7'
 
         # below are test cases for all of the standard transaction types
 
@@ -63,26 +59,18 @@ class DecodeScriptTest(WidecoinTestFramework):
         # <pubkey> OP_CHECKSIG
         rpc_result = self.nodes[0].decodescript(push_public_key + 'ac')
         assert_equal(public_key + ' OP_CHECKSIG', rpc_result['asm'])
-        # P2PK is translated to P2WPKH
-        assert_equal('0 ' + public_key_hash, rpc_result['segwit']['asm'])
 
         # 2) P2PKH scriptPubKey
         # OP_DUP OP_HASH160 <PubKeyHash> OP_EQUALVERIFY OP_CHECKSIG
         rpc_result = self.nodes[0].decodescript('76a9' + push_public_key_hash + '88ac')
         assert_equal('OP_DUP OP_HASH160 ' + public_key_hash + ' OP_EQUALVERIFY OP_CHECKSIG', rpc_result['asm'])
-        # P2PKH is translated to P2WPKH
-        assert_equal('0 ' + public_key_hash, rpc_result['segwit']['asm'])
 
         # 3) multisig scriptPubKey
         # <m> <A pubkey> <B pubkey> <C pubkey> <n> OP_CHECKMULTISIG
         # just imagine that the pub keys used below are different.
         # for our purposes here it does not matter that they are the same even though it is unrealistic.
-        multisig_script = '52' + push_public_key + push_public_key + push_public_key + '53ae'
-        rpc_result = self.nodes[0].decodescript(multisig_script)
+        rpc_result = self.nodes[0].decodescript('52' + push_public_key + push_public_key + push_public_key + '53ae')
         assert_equal('2 ' + public_key + ' ' + public_key + ' ' + public_key +  ' 3 OP_CHECKMULTISIG', rpc_result['asm'])
-        # multisig in P2WSH
-        multisig_script_hash = sha256(hex_str_to_bytes(multisig_script)).hex()
-        assert_equal('0 ' + multisig_script_hash, rpc_result['segwit']['asm'])
 
         # 4) P2SH scriptPubKey
         # OP_HASH160 <Hash160(redeemScript)> OP_EQUAL.
@@ -90,8 +78,6 @@ class DecodeScriptTest(WidecoinTestFramework):
         # but this works the same for purposes of this test.
         rpc_result = self.nodes[0].decodescript('a9' + push_public_key_hash + '87')
         assert_equal('OP_HASH160 ' + public_key_hash + ' OP_EQUAL', rpc_result['asm'])
-        # P2SH does not work in segwit secripts. decodescript should not return a result for it.
-        assert 'segwit' not in rpc_result
 
         # 5) null data scriptPubKey
         # use a signature look-alike here to make sure that we do not decode random data as a signature.
@@ -115,49 +101,8 @@ class DecodeScriptTest(WidecoinTestFramework):
         # <sender-pubkey> OP_CHECKSIG
         #
         # lock until block 500,000
-        cltv_script = '63' + push_public_key + 'ad670320a107b17568' + push_public_key + 'ac'
-        rpc_result = self.nodes[0].decodescript(cltv_script)
+        rpc_result = self.nodes[0].decodescript('63' + push_public_key + 'ad670320a107b17568' + push_public_key + 'ac')
         assert_equal('OP_IF ' + public_key + ' OP_CHECKSIGVERIFY OP_ELSE 500000 OP_CHECKLOCKTIMEVERIFY OP_DROP OP_ENDIF ' + public_key + ' OP_CHECKSIG', rpc_result['asm'])
-        # CLTV script in P2WSH
-        cltv_script_hash = sha256(hex_str_to_bytes(cltv_script)).hex()
-        assert_equal('0 ' + cltv_script_hash, rpc_result['segwit']['asm'])
-
-        # 7) P2PK scriptPubKey
-        # <pubkey> OP_CHECKSIG
-        rpc_result = self.nodes[0].decodescript(push_uncompressed_public_key + 'ac')
-        assert_equal(uncompressed_public_key + ' OP_CHECKSIG', rpc_result['asm'])
-        # uncompressed pubkeys are invalid for checksigs in segwit scripts.
-        # decodescript should not return a P2WPKH equivalent.
-        assert 'segwit' not in rpc_result
-
-        # 8) multisig scriptPubKey with an uncompressed pubkey
-        # <m> <A pubkey> <B pubkey> <n> OP_CHECKMULTISIG
-        # just imagine that the pub keys used below are different.
-        # the purpose of this test is to check that a segwit script is not returned for bare multisig scripts
-        # with an uncompressed pubkey in them.
-        rpc_result = self.nodes[0].decodescript('52' + push_public_key + push_uncompressed_public_key +'52ae')
-        assert_equal('2 ' + public_key + ' ' + uncompressed_public_key + ' 2 OP_CHECKMULTISIG', rpc_result['asm'])
-        # uncompressed pubkeys are invalid for checksigs in segwit scripts.
-        # decodescript should not return a P2WPKH equivalent.
-        assert 'segwit' not in rpc_result
-
-        # 9) P2WPKH scriptpubkey
-        # 0 <PubKeyHash>
-        rpc_result = self.nodes[0].decodescript('00' + push_public_key_hash)
-        assert_equal('0 ' + public_key_hash, rpc_result['asm'])
-        # segwit scripts do not work nested into each other.
-        # a nested segwit script should not be returned in the results.
-        assert 'segwit' not in rpc_result
-
-        # 10) P2WSH scriptpubkey
-        # 0 <ScriptHash>
-        # even though this hash is of a P2PK script which is better used as bare P2WPKH, it should not matter
-        # for the purpose of this test.
-        rpc_result = self.nodes[0].decodescript('0020' + p2wsh_p2pk_script_hash)
-        assert_equal('0 ' + p2wsh_p2pk_script_hash, rpc_result['asm'])
-        # segwit scripts do not work nested into each other.
-        # a nested segwit script should not be returned in the results.
-        assert 'segwit' not in rpc_result
 
     def decoderawtransaction_asm_sighashtype(self):
         """Test decoding scripts via RPC command "decoderawtransaction".
@@ -196,7 +141,7 @@ class DecodeScriptTest(WidecoinTestFramework):
         # some more full transaction tests of varying specific scriptSigs. used instead of
         # tests in decodescript_script_sig because the decodescript RPC is specifically
         # for working on scriptPubKeys (argh!).
-        push_signature = txSave.vin[0].scriptSig.hex()[2:(0x48*2+4)]
+        push_signature = bytes_to_hex_str(txSave.vin[0].scriptSig)[2:(0x48*2+4)]
         signature = push_signature[2:]
         der_signature = signature[:-2]
         signature_sighash_decoded = der_signature + '[ALL]'
@@ -206,23 +151,23 @@ class DecodeScriptTest(WidecoinTestFramework):
 
         # 1) P2PK scriptSig
         txSave.vin[0].scriptSig = hex_str_to_bytes(push_signature)
-        rpc_result = self.nodes[0].decoderawtransaction(txSave.serialize().hex())
+        rpc_result = self.nodes[0].decoderawtransaction(bytes_to_hex_str(txSave.serialize()))
         assert_equal(signature_sighash_decoded, rpc_result['vin'][0]['scriptSig']['asm'])
 
         # make sure that the sighash decodes come out correctly for a more complex / lesser used case.
         txSave.vin[0].scriptSig = hex_str_to_bytes(push_signature_2)
-        rpc_result = self.nodes[0].decoderawtransaction(txSave.serialize().hex())
+        rpc_result = self.nodes[0].decoderawtransaction(bytes_to_hex_str(txSave.serialize()))
         assert_equal(signature_2_sighash_decoded, rpc_result['vin'][0]['scriptSig']['asm'])
 
         # 2) multisig scriptSig
         txSave.vin[0].scriptSig = hex_str_to_bytes('00' + push_signature + push_signature_2)
-        rpc_result = self.nodes[0].decoderawtransaction(txSave.serialize().hex())
+        rpc_result = self.nodes[0].decoderawtransaction(bytes_to_hex_str(txSave.serialize()))
         assert_equal('0 ' + signature_sighash_decoded + ' ' + signature_2_sighash_decoded, rpc_result['vin'][0]['scriptSig']['asm'])
 
         # 3) test a scriptSig that contains more than push operations.
         # in fact, it contains an OP_RETURN with data specially crafted to cause improper decode if the code does not catch it.
         txSave.vin[0].scriptSig = hex_str_to_bytes('6a143011020701010101010101020601010101010101')
-        rpc_result = self.nodes[0].decoderawtransaction(txSave.serialize().hex())
+        rpc_result = self.nodes[0].decoderawtransaction(bytes_to_hex_str(txSave.serialize()))
         assert_equal('OP_RETURN 3011020701010101010101020601010101010101', rpc_result['vin'][0]['scriptSig']['asm'])
 
     def run_test(self):

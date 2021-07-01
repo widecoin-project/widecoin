@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=Widecoin Core
+Comment=Connect to the Widecoin P2P Network
+Comment[de]=Verbinde mit dem Widecoin peer-to-peer Netzwerk
+Comment[fr]=Widecoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Widecoin, eşten eşe kriptografik sanal para birimi
+Exec=widecoin-qt %u
+Terminal=false
+Type=Application
+Icon=widecoin128
+MimeType=x-scheme-handler/widecoin;
+Categories=Office;Finance;
+StartupWMClass=Widecoin-qt

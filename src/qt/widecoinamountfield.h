@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2018 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -26,19 +26,10 @@ class WidecoinAmountField: public QWidget
     Q_PROPERTY(qint64 value READ value WRITE setValue NOTIFY valueChanged USER true)
 
 public:
-    explicit WidecoinAmountField(QWidget *parent = nullptr);
+    explicit WidecoinAmountField(QWidget *parent = 0);
 
-    CAmount value(bool *value=nullptr) const;
+    CAmount value(bool *value=0) const;
     void setValue(const CAmount& value);
-
-    /** If allow empty is set to false the field will be set to the minimum allowed value if left empty. **/
-    void SetAllowEmpty(bool allow);
-
-    /** Set the minimum value in satoshis **/
-    void SetMinValue(const CAmount& value);
-
-    /** Set the maximum value in satoshis **/
-    void SetMaxValue(const CAmount& value);
 
     /** Set single step in satoshis **/
     void setSingleStep(const CAmount& step);
@@ -70,7 +61,7 @@ Q_SIGNALS:
 
 protected:
     /** Intercept focus-in event and ',' key presses */
-    bool eventFilter(QObject *object, QEvent *event) override;
+    bool eventFilter(QObject *object, QEvent *event);
 
 private:
     AmountSpinBox *amount;

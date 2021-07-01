@@ -17,7 +17,7 @@ class WidecoinAddressEntryValidator : public QValidator
 public:
     explicit WidecoinAddressEntryValidator(QObject *parent);
 
-    State validate(QString &input, int &pos) const override;
+    State validate(QString &input, int &pos) const;
 };
 
 /** Widecoin address widget validator, checks for a valid widecoin address.
@@ -29,7 +29,7 @@ class WidecoinAddressCheckValidator : public QValidator
 public:
     explicit WidecoinAddressCheckValidator(QObject *parent);
 
-    State validate(QString &input, int &pos) const override;
+    State validate(QString &input, int &pos) const;
 };
 
 #endif // WIDECOIN_QT_WIDECOINADDRESSVALIDATOR_H

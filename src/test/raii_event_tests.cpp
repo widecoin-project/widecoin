@@ -1,21 +1,22 @@
-// Copyright (c) 2016-2019 The Widecoin Core developers
+// Copyright (c) 2016-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <event2/event.h>
+
+#ifdef EVENT_SET_MEM_FUNCTIONS_IMPLEMENTED
+// It would probably be ideal to define dummy test(s) that report skipped, but boost::test doesn't seem to make that practical (at least not in versions available with common distros)
 
 #include <map>
 #include <stdlib.h>
 
 #include <support/events.h>
 
-#include <test/util/setup_common.h>
+#include <test/test_widecoin.h>
+
+#include <vector>
 
 #include <boost/test/unit_test.hpp>
-
-BOOST_FIXTURE_TEST_SUITE(raii_event_tests, BasicTestingSetup)
-
-#ifdef EVENT_SET_MEM_FUNCTIONS_IMPLEMENTED
 
 static std::map<void*, short> tags;
 static std::map<void*, uint16_t> orders;
@@ -35,10 +36,12 @@ static void tag_free(void* mem) {
     free(mem);
 }
 
+BOOST_FIXTURE_TEST_SUITE(raii_event_tests, BasicTestingSetup)
+
 BOOST_AUTO_TEST_CASE(raii_event_creation)
 {
     event_set_mem_functions(tag_malloc, realloc, tag_free);
-
+    
     void* base_ptr = nullptr;
     {
         auto base = obtain_event_base();
@@ -46,7 +49,7 @@ BOOST_AUTO_TEST_CASE(raii_event_creation)
         BOOST_CHECK(tags[base_ptr] == 1);
     }
     BOOST_CHECK(tags[base_ptr] == 0);
-
+    
     void* event_ptr = nullptr;
     {
         auto base = obtain_event_base();
@@ -60,14 +63,14 @@ BOOST_AUTO_TEST_CASE(raii_event_creation)
     }
     BOOST_CHECK(tags[base_ptr] == 0);
     BOOST_CHECK(tags[event_ptr] == 0);
-
+    
     event_set_mem_functions(malloc, realloc, free);
 }
 
 BOOST_AUTO_TEST_CASE(raii_event_order)
 {
     event_set_mem_functions(tag_malloc, realloc, tag_free);
-
+    
     void* base_ptr = nullptr;
     void* event_ptr = nullptr;
     {
@@ -86,14 +89,6 @@ BOOST_AUTO_TEST_CASE(raii_event_order)
     event_set_mem_functions(malloc, realloc, free);
 }
 
-#else
-
-BOOST_AUTO_TEST_CASE(raii_event_tests_SKIPPED)
-{
-    // It would probably be ideal to report skipped, but boost::test doesn't seem to make that practical (at least not in versions available with common distros)
-    BOOST_TEST_MESSAGE("Skipping raii_event_tess: libevent doesn't support event_set_mem_functions");
-}
+BOOST_AUTO_TEST_SUITE_END()
 
 #endif  // EVENT_SET_MEM_FUNCTIONS_IMPLEMENTED
-
-BOOST_AUTO_TEST_SUITE_END()

@@ -1,16 +1,17 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2019 The Widecoin Core developers
+// Copyright (c) 2009-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef WIDECOIN_ARITH_UINT256_H
 #define WIDECOIN_ARITH_UINT256_H
 
+#include <assert.h>
 #include <cstring>
-#include <limits>
 #include <stdexcept>
 #include <stdint.h>
 #include <string>
+#include <vector>
 
 class uint256;
 
@@ -63,6 +64,14 @@ public:
 
     explicit base_uint(const std::string& str);
 
+    bool operator!() const
+    {
+        for (int i = 0; i < WIDTH; i++)
+            if (pn[i] != 0)
+                return false;
+        return true;
+    }
+
     const base_uint operator~() const
     {
         base_uint ret;
@@ -76,7 +85,7 @@ public:
         base_uint ret;
         for (int i = 0; i < WIDTH; i++)
             ret.pn[i] = ~pn[i];
-        ++ret;
+        ret++;
         return ret;
     }
 
@@ -188,7 +197,7 @@ public:
     {
         // prefix operator
         int i = 0;
-        while (i < WIDTH && --pn[i] == std::numeric_limits<uint32_t>::max())
+        while (i < WIDTH && --pn[i] == (uint32_t)-1)
             i++;
         return *this;
     }

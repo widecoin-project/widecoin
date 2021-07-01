@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2019 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,11 +17,6 @@
 class ClientModel;
 class PlatformStyle;
 class RPCTimerInterface;
-class WalletModel;
-
-namespace interfaces {
-    class Node;
-}
 
 namespace Ui {
     class RPCConsole;
@@ -38,17 +33,15 @@ class RPCConsole: public QWidget
     Q_OBJECT
 
 public:
-    explicit RPCConsole(interfaces::Node& node, const PlatformStyle *platformStyle, QWidget *parent);
+    explicit RPCConsole(const PlatformStyle *platformStyle, QWidget *parent);
     ~RPCConsole();
 
-    static bool RPCParseCommandLine(interfaces::Node* node, std::string &strResult, const std::string &strCommand, bool fExecute, std::string * const pstrFilteredOut = nullptr, const WalletModel* wallet_model = nullptr);
-    static bool RPCExecuteCommandLine(interfaces::Node& node, std::string &strResult, const std::string &strCommand, std::string * const pstrFilteredOut = nullptr, const WalletModel* wallet_model = nullptr) {
-        return RPCParseCommandLine(&node, strResult, strCommand, true, pstrFilteredOut, wallet_model);
+    static bool RPCParseCommandLine(std::string &strResult, const std::string &strCommand, bool fExecute, std::string * const pstrFilteredOut = nullptr);
+    static bool RPCExecuteCommandLine(std::string &strResult, const std::string &strCommand, std::string * const pstrFilteredOut = nullptr) {
+        return RPCParseCommandLine(strResult, strCommand, true, pstrFilteredOut);
     }
 
-    void setClientModel(ClientModel *model = nullptr, int bestblock_height = 0, int64_t bestblock_date = 0, double verification_progress = 0.0);
-    void addWallet(WalletModel * const walletModel);
-    void removeWallet(WalletModel* const walletModel);
+    void setClientModel(ClientModel *model);
 
     enum MessageClass {
         MC_ERROR,
@@ -58,21 +51,16 @@ public:
         CMD_ERROR
     };
 
-    enum class TabTypes {
-        INFO,
-        CONSOLE,
-        GRAPH,
-        PEERS
+    enum TabTypes {
+        TAB_INFO = 0,
+        TAB_CONSOLE = 1,
+        TAB_GRAPH = 2,
+        TAB_PEERS = 3
     };
 
-    std::vector<TabTypes> tabs() const { return {TabTypes::INFO, TabTypes::CONSOLE, TabTypes::GRAPH, TabTypes::PEERS}; }
-
-    QString tabTitle(TabTypes tab_type) const;
-    QKeySequence tabShortcut(TabTypes tab_type) const;
-
 protected:
-    virtual bool eventFilter(QObject* obj, QEvent *event) override;
-    void keyPressEvent(QKeyEvent *) override;
+    virtual bool eventFilter(QObject* obj, QEvent *event);
+    void keyPressEvent(QKeyEvent *);
 
 private Q_SLOTS:
     void on_lineEdit_returnPressed();
@@ -83,9 +71,9 @@ private Q_SLOTS:
     void on_sldGraphRange_valueChanged(int value);
     /** update traffic statistics */
     void updateTrafficStats(quint64 totalBytesIn, quint64 totalBytesOut);
-    void resizeEvent(QResizeEvent *event) override;
-    void showEvent(QShowEvent *event) override;
-    void hideEvent(QHideEvent *event) override;
+    void resizeEvent(QResizeEvent *event);
+    void showEvent(QShowEvent *event);
+    void hideEvent(QHideEvent *event);
     /** Show custom context menu on Peers tab */
     void showPeersTableContextMenu(const QPoint& point);
     /** Show custom context menu on Bans tab */
@@ -101,8 +89,7 @@ public Q_SLOTS:
     void fontSmaller();
     void setFontSize(int newSize);
     /** Append the message to the message widget */
-    void message(int category, const QString &msg) { message(category, msg, false); }
-    void message(int category, const QString &message, bool html);
+    void message(int category, const QString &message, bool html = false);
     /** Set number of connections shown in the UI */
     void setNumConnections(int count);
     /** Set network state shown in the UI */
@@ -132,7 +119,8 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     // For RPC command executor
-    void cmdRequest(const QString &command, const WalletModel* wallet_model);
+    void stopExecutor();
+    void cmdRequest(const QString &command);
 
 private:
     void startExecutor();
@@ -150,27 +138,22 @@ private:
 
     };
 
-    interfaces::Node& m_node;
-    Ui::RPCConsole* const ui;
-    ClientModel *clientModel = nullptr;
+    Ui::RPCConsole *ui;
+    ClientModel *clientModel;
     QStringList history;
-    int historyPtr = 0;
+    int historyPtr;
     QString cmdBeforeBrowsing;
     QList<NodeId> cachedNodeids;
-    const PlatformStyle* const platformStyle;
-    RPCTimerInterface *rpcTimerInterface = nullptr;
-    QMenu *peersTableContextMenu = nullptr;
-    QMenu *banTableContextMenu = nullptr;
-    int consoleFontSize = 0;
-    QCompleter *autoCompleter = nullptr;
+    const PlatformStyle *platformStyle;
+    RPCTimerInterface *rpcTimerInterface;
+    QMenu *peersTableContextMenu;
+    QMenu *banTableContextMenu;
+    int consoleFontSize;
+    QCompleter *autoCompleter;
     QThread thread;
-    WalletModel* m_last_wallet_model{nullptr};
 
     /** Update UI with latest network info from model. */
     void updateNetworkState();
-
-private Q_SLOTS:
-    void updateAlerts(const QString& warnings);
 };
 
 #endif // WIDECOIN_QT_RPCCONSOLE_H

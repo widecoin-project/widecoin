@@ -1,32 +1,32 @@
-// Copyright (c) 2011-2019 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef WIDECOIN_QT_WALLETMODELTRANSACTION_H
 #define WIDECOIN_QT_WALLETMODELTRANSACTION_H
 
-#include <primitives/transaction.h>
-#include <qt/sendcoinsrecipient.h>
+#include <qt/walletmodel.h>
 
-#include <amount.h>
+#include <memory>
 
 #include <QObject>
 
 class SendCoinsRecipient;
 
-namespace interfaces {
-class Node;
-}
+class CReserveKey;
+class CWallet;
+class CWalletTx;
 
 /** Data model for a walletmodel transaction. */
 class WalletModelTransaction
 {
 public:
     explicit WalletModelTransaction(const QList<SendCoinsRecipient> &recipients);
+    ~WalletModelTransaction();
 
     QList<SendCoinsRecipient> getRecipients() const;
 
-    CTransactionRef& getWtx();
+    CWalletTx *getTransaction() const;
     unsigned int getTransactionSize();
 
     void setTransactionFee(const CAmount& newFee);
@@ -34,11 +34,15 @@ public:
 
     CAmount getTotalTransactionAmount() const;
 
+    void newPossibleKeyChange(CWallet *wallet);
+    CReserveKey *getPossibleKeyChange();
+
     void reassignAmounts(int nChangePosRet); // needed for the subtract-fee-from-amount feature
 
 private:
     QList<SendCoinsRecipient> recipients;
-    CTransactionRef wtx;
+    CWalletTx *walletTransaction;
+    std::unique_ptr<CReserveKey> keyChange;
     CAmount fee;
 };
 

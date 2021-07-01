@@ -1,15 +1,15 @@
-// Copyright (c) 2013-2020 The Widecoin Core developers
+// Copyright (c) 2013-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <boost/test/unit_test.hpp>
 
-#include <clientversion.h>
+#include <base58.h>
 #include <key.h>
-#include <key_io.h>
-#include <streams.h>
-#include <test/util/setup_common.h>
-#include <util/strencodings.h>
+#include <uint256.h>
+#include <util.h>
+#include <utilstrencodings.h>
+#include <test/test_widecoin.h>
 
 #include <string>
 #include <vector>
@@ -87,11 +87,11 @@ TestVector test3 =
      "xprv9uPDJpEQgRQfDcW7BkF7eTya6RPxXeJCqCJGHuCJ4GiRVLzkTXBAJMu2qaMWPrS7AANYqdq6vcBcBUdJCVVFceUvJFjaPdGZ2y9WACViL4L",
       0);
 
-static void RunTest(const TestVector &test) {
+void RunTest(const TestVector &test) {
     std::vector<unsigned char> seed = ParseHex(test.strHexMaster);
     CExtKey key;
     CExtPubKey pubkey;
-    key.SetSeed(seed.data(), seed.size());
+    key.SetMaster(seed.data(), seed.size());
     pubkey = key.Neuter();
     for (const TestDerivation &derive : test.vDerive) {
         unsigned char data[74];
@@ -99,12 +99,20 @@ static void RunTest(const TestVector &test) {
         pubkey.Encode(data);
 
         // Test private key
-        BOOST_CHECK(EncodeExtKey(key) == derive.prv);
-        BOOST_CHECK(DecodeExtKey(derive.prv) == key); //ensure a base58 decoded key also matches
+        CWidecoinExtKey b58key; b58key.SetKey(key);
+        BOOST_CHECK(b58key.ToString() == derive.prv);
+
+        CWidecoinExtKey b58keyDecodeCheck(derive.prv);
+        CExtKey checkKey = b58keyDecodeCheck.GetKey();
+        assert(checkKey == key); //ensure a base58 decoded key also matches
 
         // Test public key
-        BOOST_CHECK(EncodeExtPubKey(pubkey) == derive.pub);
-        BOOST_CHECK(DecodeExtPubKey(derive.pub) == pubkey); //ensure a base58 decoded pubkey also matches
+        CWidecoinExtPubKey b58pubkey; b58pubkey.SetKey(pubkey);
+        BOOST_CHECK(b58pubkey.ToString() == derive.pub);
+
+        CWidecoinExtPubKey b58PubkeyDecodeCheck(derive.pub);
+        CExtPubKey checkPubKey = b58PubkeyDecodeCheck.GetKey();
+        assert(checkPubKey == pubkey); //ensure a base58 decoded pubkey also matches
 
         // Derive new keys
         CExtKey keyNew;
@@ -118,6 +126,22 @@ static void RunTest(const TestVector &test) {
         }
         key = keyNew;
         pubkey = pubkeyNew;
+
+        CDataStream ssPub(SER_DISK, CLIENT_VERSION);
+        ssPub << pubkeyNew;
+        BOOST_CHECK(ssPub.size() == 75);
+
+        CDataStream ssPriv(SER_DISK, CLIENT_VERSION);
+        ssPriv << keyNew;
+        BOOST_CHECK(ssPriv.size() == 75);
+
+        CExtPubKey pubCheck;
+        CExtKey privCheck;
+        ssPub >> pubCheck;
+        ssPriv >> privCheck;
+
+        BOOST_CHECK(pubCheck == pubkeyNew);
+        BOOST_CHECK(privCheck == keyNew);
     }
 }
 

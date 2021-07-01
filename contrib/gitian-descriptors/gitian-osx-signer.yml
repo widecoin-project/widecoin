@@ -1,8 +1,7 @@
 ---
 name: "widecoin-dmg-signer"
-distro: "ubuntu"
 suites:
-- "bionic"
+- "trusty"
 architectures:
 - "amd64"
 packages:
@@ -13,18 +12,16 @@ remotes:
 files:
 - "widecoin-osx-unsigned.tar.gz"
 script: |
-  set -e -o pipefail
-
   WRAP_DIR=$HOME/wrapped
   mkdir -p ${WRAP_DIR}
-  export PATH="$PWD":$PATH
+  export PATH=`pwd`:$PATH
   FAKETIME_PROGS="dmg genisoimage"
 
   # Create global faketime wrappers
   for prog in ${FAKETIME_PROGS}; do
-    echo '#!/usr/bin/env bash' > ${WRAP_DIR}/${prog}
+    echo '#!/bin/bash' > ${WRAP_DIR}/${prog}
     echo "REAL=\`which -a ${prog} | grep -v ${WRAP_DIR}/${prog} | head -1\`" >> ${WRAP_DIR}/${prog}
-    echo "export LD_PRELOAD='/usr/\$LIB/faketime/libfaketime.so.1'" >> ${WRAP_DIR}/${prog}
+    echo 'export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/faketime/libfaketime.so.1' >> ${WRAP_DIR}/${prog}
     echo "export FAKETIME=\"${REFERENCE_DATETIME}\"" >> ${WRAP_DIR}/${prog}
     echo "\$REAL \$@" >> $WRAP_DIR/${prog}
     chmod +x ${WRAP_DIR}/${prog}

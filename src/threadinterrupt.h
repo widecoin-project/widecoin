@@ -1,15 +1,14 @@
-// Copyright (c) 2016-2019 The Widecoin Core developers
+// Copyright (c) 2016 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef WIDECOIN_THREADINTERRUPT_H
 #define WIDECOIN_THREADINTERRUPT_H
 
-#include <sync.h>
-
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
+#include <mutex>
 
 /*
     A helper class for interruptible sleeps. Calling operator() will interrupt
@@ -19,7 +18,6 @@
 class CThreadInterrupt
 {
 public:
-    CThreadInterrupt();
     explicit operator bool() const;
     void operator()();
     void reset();
@@ -29,7 +27,7 @@ public:
 
 private:
     std::condition_variable cond;
-    Mutex mut;
+    std::mutex mut;
     std::atomic<bool> flag;
 };
 

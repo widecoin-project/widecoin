@@ -1,10 +1,8 @@
-// Copyright (c) 2016-2019 The Widecoin Core developers
+// Copyright (c) 2016-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#if defined(HAVE_CONFIG_H)
-#include <config/widecoin-config.h>
-#endif
+#include <qt/paymentrequestplus.h> // this includes protobuf's port.h which defines its own bswap macos
 
 #include <qt/test/compattests.h>
 

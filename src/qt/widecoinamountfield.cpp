@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2019 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,7 +6,6 @@
 
 #include <qt/widecoinunits.h>
 #include <qt/guiconstants.h>
-#include <qt/guiutil.h>
 #include <qt/qvaluecombobox.h>
 
 #include <QApplication>
@@ -24,14 +23,16 @@ class AmountSpinBox: public QAbstractSpinBox
 
 public:
     explicit AmountSpinBox(QWidget *parent):
-        QAbstractSpinBox(parent)
+        QAbstractSpinBox(parent),
+        currentUnit(WidecoinUnits::WCN),
+        singleStep(100000) // satoshis
     {
         setAlignment(Qt::AlignRight);
 
-        connect(lineEdit(), &QLineEdit::textEdited, this, &AmountSpinBox::valueChanged);
+        connect(lineEdit(), SIGNAL(textEdited(QString)), this, SIGNAL(valueChanged()));
     }
 
-    QValidator::State validate(QString &text, int &pos) const override
+    QValidator::State validate(QString &text, int &pos) const
     {
         if(text.isEmpty())
             return QValidator::Intermediate;
@@ -41,58 +42,34 @@ public:
         return valid ? QValidator::Intermediate : QValidator::Invalid;
     }
 
-    void fixup(QString &input) const override
+    void fixup(QString &input) const
     {
-        bool valid;
-        CAmount val;
-
-        if (input.isEmpty() && !m_allow_empty) {
-            valid = true;
-            val = m_min_amount;
-        } else {
-            valid = false;
-            val = parse(input, &valid);
-        }
-
-        if (valid) {
-            val = qBound(m_min_amount, val, m_max_amount);
-            input = WidecoinUnits::format(currentUnit, val, false, WidecoinUnits::SeparatorStyle::ALWAYS);
+        bool valid = false;
+        CAmount val = parse(input, &valid);
+        if(valid)
+        {
+            input = WidecoinUnits::format(currentUnit, val, false, WidecoinUnits::separatorAlways);
             lineEdit()->setText(input);
         }
     }
 
-    CAmount value(bool *valid_out=nullptr) const
+    CAmount value(bool *valid_out=0) const
     {
         return parse(text(), valid_out);
     }
 
     void setValue(const CAmount& value)
     {
-        lineEdit()->setText(WidecoinUnits::format(currentUnit, value, false, WidecoinUnits::SeparatorStyle::ALWAYS));
+        lineEdit()->setText(WidecoinUnits::format(currentUnit, value, false, WidecoinUnits::separatorAlways));
         Q_EMIT valueChanged();
     }
 
-    void SetAllowEmpty(bool allow)
-    {
-        m_allow_empty = allow;
-    }
-
-    void SetMinValue(const CAmount& value)
-    {
-        m_min_amount = value;
-    }
-
-    void SetMaxValue(const CAmount& value)
-    {
-        m_max_amount = value;
-    }
-
-    void stepBy(int steps) override
+    void stepBy(int steps)
     {
         bool valid = false;
         CAmount val = value(&valid);
         val = val + steps * singleStep;
-        val = qBound(m_min_amount, val, m_max_amount);
+        val = qMin(qMax(val, CAmount(0)), WidecoinUnits::maxMoney());
         setValue(val);
     }
 
@@ -102,7 +79,7 @@ public:
         CAmount val = value(&valid);
 
         currentUnit = unit;
-        lineEdit()->setPlaceholderText(WidecoinUnits::format(currentUnit, m_min_amount, false, WidecoinUnits::SeparatorStyle::ALWAYS));
+
         if(valid)
             setValue(val);
         else
@@ -114,7 +91,7 @@ public:
         singleStep = step;
     }
 
-    QSize minimumSizeHint() const override
+    QSize minimumSizeHint() const
     {
         if(cachedMinimumSizeHint.isEmpty())
         {
@@ -122,7 +99,7 @@ public:
 
             const QFontMetrics fm(fontMetrics());
             int h = lineEdit()->minimumSizeHint().height();
-            int w = GUIUtil::TextWidth(fm, WidecoinUnits::format(WidecoinUnits::WCN, WidecoinUnits::maxMoney(), false, WidecoinUnits::SeparatorStyle::ALWAYS));
+            int w = fm.width(WidecoinUnits::format(WidecoinUnits::WCN, WidecoinUnits::maxMoney(), false, WidecoinUnits::separatorAlways));
             w += 2; // cursor blinking space
 
             QStyleOptionSpinBox opt;
@@ -148,19 +125,16 @@ public:
     }
 
 private:
-    int currentUnit{WidecoinUnits::WCN};
-    CAmount singleStep{CAmount(100000)}; // satoshis
+    int currentUnit;
+    CAmount singleStep;
     mutable QSize cachedMinimumSizeHint;
-    bool m_allow_empty{true};
-    CAmount m_min_amount{CAmount(0)};
-    CAmount m_max_amount{WidecoinUnits::maxMoney()};
 
     /**
      * Parse a string into a number of base monetary units and
      * return validity.
      * @note Must return 0 if !valid.
      */
-    CAmount parse(const QString &text, bool *valid_out=nullptr) const
+    CAmount parse(const QString &text, bool *valid_out=0) const
     {
         CAmount val = 0;
         bool valid = WidecoinUnits::parse(currentUnit, text, &val);
@@ -175,7 +149,7 @@ private:
     }
 
 protected:
-    bool event(QEvent *event) override
+    bool event(QEvent *event)
     {
         if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
         {
@@ -190,20 +164,21 @@ protected:
         return QAbstractSpinBox::event(event);
     }
 
-    StepEnabled stepEnabled() const override
+    StepEnabled stepEnabled() const
     {
         if (isReadOnly()) // Disable steps when AmountSpinBox is read-only
             return StepNone;
         if (text().isEmpty()) // Allow step-up with empty field
             return StepUpEnabled;
 
-        StepEnabled rv = StepNone;
+        StepEnabled rv = 0;
         bool valid = false;
         CAmount val = value(&valid);
-        if (valid) {
-            if (val > m_min_amount)
+        if(valid)
+        {
+            if(val > 0)
                 rv |= StepDownEnabled;
-            if (val < m_max_amount)
+            if(val < WidecoinUnits::maxMoney())
                 rv |= StepUpEnabled;
         }
         return rv;
@@ -217,12 +192,12 @@ Q_SIGNALS:
 
 WidecoinAmountField::WidecoinAmountField(QWidget *parent) :
     QWidget(parent),
-    amount(nullptr)
+    amount(0)
 {
     amount = new AmountSpinBox(this);
     amount->setLocale(QLocale::c());
     amount->installEventFilter(this);
-    amount->setMaximumWidth(240);
+    amount->setMaximumWidth(170);
 
     QHBoxLayout *layout = new QHBoxLayout(this);
     layout->addWidget(amount);
@@ -238,8 +213,8 @@ WidecoinAmountField::WidecoinAmountField(QWidget *parent) :
     setFocusProxy(amount);
 
     // If one if the widgets changes, the combined content changes as well
-    connect(amount, &AmountSpinBox::valueChanged, this, &WidecoinAmountField::valueChanged);
-    connect(unit, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &WidecoinAmountField::unitChanged);
+    connect(amount, SIGNAL(valueChanged()), this, SIGNAL(valueChanged()));
+    connect(unit, SIGNAL(currentIndexChanged(int)), this, SLOT(unitChanged(int)));
 
     // Set default based on configuration
     unitChanged(unit->currentIndex());
@@ -298,21 +273,6 @@ CAmount WidecoinAmountField::value(bool *valid_out) const
 void WidecoinAmountField::setValue(const CAmount& value)
 {
     amount->setValue(value);
-}
-
-void WidecoinAmountField::SetAllowEmpty(bool allow)
-{
-    amount->SetAllowEmpty(allow);
-}
-
-void WidecoinAmountField::SetMinValue(const CAmount& value)
-{
-    amount->SetMinValue(value);
-}
-
-void WidecoinAmountField::SetMaxValue(const CAmount& value)
-{
-    amount->SetMaxValue(value);
 }
 
 void WidecoinAmountField::setReadOnly(bool fReadOnly)

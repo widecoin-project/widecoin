@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2019 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,8 +6,6 @@
 #define WIDECOIN_QT_ASKPASSPHRASEDIALOG_H
 
 #include <QDialog>
-
-#include <support/allocators/secure.h>
 
 class WalletModel;
 
@@ -29,10 +27,10 @@ public:
         Decrypt     /**< Ask passphrase and decrypt wallet */
     };
 
-    explicit AskPassphraseDialog(Mode mode, QWidget *parent, SecureString* passphrase_out = nullptr);
+    explicit AskPassphraseDialog(Mode mode, QWidget *parent);
     ~AskPassphraseDialog();
 
-    void accept() override;
+    void accept();
 
     void setModel(WalletModel *model);
 
@@ -41,7 +39,6 @@ private:
     Mode mode;
     WalletModel *model;
     bool fCapsLock;
-    SecureString* m_passphrase_out;
 
 private Q_SLOTS:
     void textChanged();
@@ -49,8 +46,8 @@ private Q_SLOTS:
     void toggleShowPassword(bool);
 
 protected:
-    bool event(QEvent *event) override;
-    bool eventFilter(QObject *object, QEvent *event) override;
+    bool event(QEvent *event);
+    bool eventFilter(QObject *object, QEvent *event);
 };
 
 #endif // WIDECOIN_QT_ASKPASSPHRASEDIALOG_H

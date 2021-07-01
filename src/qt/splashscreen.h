@@ -1,21 +1,15 @@
-// Copyright (c) 2011-2018 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef WIDECOIN_QT_SPLASHSCREEN_H
 #define WIDECOIN_QT_SPLASHSCREEN_H
 
-#include <QWidget>
+#include <functional>
+#include <QSplashScreen>
 
-#include <memory>
-
+class CWallet;
 class NetworkStyle;
-
-namespace interfaces {
-class Handler;
-class Node;
-class Wallet;
-};
 
 /** Class for the splashscreen with information of the running client.
  *
@@ -30,45 +24,35 @@ class SplashScreen : public QWidget
 public:
     explicit SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle);
     ~SplashScreen();
-    void setNode(interfaces::Node& node);
 
 protected:
-    void paintEvent(QPaintEvent *event) override;
-    void closeEvent(QCloseEvent *event) override;
+    void paintEvent(QPaintEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 public Q_SLOTS:
-    /** Hide the splash screen window and schedule the splash screen object for deletion */
-    void finish();
+    /** Slot to call finish() method as it's not defined as slot */
+    void slotFinish(QWidget *mainWin);
 
     /** Show message and progress */
     void showMessage(const QString &message, int alignment, const QColor &color);
 
-    /** Handle wallet load notifications. */
-    void handleLoadWallet();
-
 protected:
-    bool eventFilter(QObject * obj, QEvent * ev) override;
+    bool eventFilter(QObject * obj, QEvent * ev);
 
 private:
     /** Connect core signals to splash screen */
     void subscribeToCoreSignals();
     /** Disconnect core signals to splash screen */
     void unsubscribeFromCoreSignals();
-    /** Initiate shutdown */
-    void shutdown();
+    /** Connect wallet signals to splash screen */
+    void ConnectWallet(CWallet*);
 
     QPixmap pixmap;
     QString curMessage;
     QColor curColor;
     int curAlignment;
 
-    interfaces::Node* m_node = nullptr;
-    bool m_shutdown = false;
-    std::unique_ptr<interfaces::Handler> m_handler_init_message;
-    std::unique_ptr<interfaces::Handler> m_handler_show_progress;
-    std::unique_ptr<interfaces::Handler> m_handler_load_wallet;
-    std::list<std::unique_ptr<interfaces::Wallet>> m_connected_wallets;
-    std::list<std::unique_ptr<interfaces::Handler>> m_connected_wallet_handlers;
+    QList<CWallet*> connectedWallets;
 };
 
 #endif // WIDECOIN_QT_SPLASHSCREEN_H

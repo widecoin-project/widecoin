@@ -30,10 +30,6 @@
         <translation>从列表删除选定的地址</translation>
     </message>
     <message>
-        <source>Enter address or label to search</source>
-        <translation>输入地址或者标签进行搜索</translation>
-    </message>
-    <message>
         <source>Export the data in the current tab to a file</source>
         <translation>导出当前数据到文件</translation>
     </message>
@@ -70,10 +66,8 @@
         <translation>这是你的比特币发币地址。发送前请确认发送数量和接收地址</translation>
     </message>
     <message>
-        <source>These are your Widecoin addresses for receiving payments. Use the 'Create new receiving address' button in the receive tab to create new addresses.
-Signing is only possible with addresses of the type 'legacy'.</source>
-        <translation>这是你的比特币接收地址。点击接收选项卡中“创建新的接收地址”按钮来创建新的地址。
-签名只能使用“传统”类型的地址。</translation>
+        <source>These are your Widecoin addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <translation>这是你的比特币接收地址。建议每次交易都使用新地址</translation>
     </message>
     <message>
         <source>&amp;Copy Address</source>
@@ -111,10 +105,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation>标签</translation>
     </message>
     <message>
-        <source>Address</source>
-        <translation>地址</translation>
-    </message>
-    <message>
         <source>(no label)</source>
         <translation>(无标签)</translation>
     </message>
@@ -122,40 +112,8 @@ Signing is only possible with addresses of the type 'legacy'.</source>
 <context>
     <name>AskPassphraseDialog</name>
     <message>
-        <source>Passphrase Dialog</source>
-        <translation>密码对话框</translation>
-    </message>
-    <message>
-        <source>Enter passphrase</source>
-        <translation>输入密码</translation>
-    </message>
-    <message>
-        <source>New passphrase</source>
-        <translation>新密码</translation>
-    </message>
-    <message>
-        <source>Repeat new passphrase</source>
-        <translation>重复输入新密码</translation>
-    </message>
-    <message>
-        <source>Show passphrase</source>
-        <translation>显示密码</translation>
-    </message>
-    <message>
         <source>Encrypt wallet</source>
         <translation>加密钱包</translation>
-    </message>
-    <message>
-        <source>This operation needs your wallet passphrase to unlock the wallet.</source>
-        <translation>此操作需要您的钱包密码用来解锁钱包。</translation>
-    </message>
-    <message>
-        <source>Unlock wallet</source>
-        <translation>解锁钱包</translation>
-    </message>
-    <message>
-        <source>This operation needs your wallet passphrase to decrypt the wallet.</source>
-        <translation>此操作需要您的钱包密码用来解密钱包。</translation>
     </message>
     </context>
 <context>
@@ -170,12 +128,6 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <source>(no label)</source>
         <translation>(无标签)</translation>
     </message>
-    </context>
-<context>
-    <name>CreateWalletActivity</name>
-    </context>
-<context>
-    <name>CreateWalletDialog</name>
     </context>
 <context>
     <name>EditAddressDialog</name>
@@ -196,16 +148,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <name>OpenURIDialog</name>
     </context>
 <context>
-    <name>OpenWalletActivity</name>
-    </context>
-<context>
     <name>OptionsDialog</name>
     </context>
 <context>
     <name>OverviewPage</name>
-    </context>
-<context>
-    <name>PSBTOperationsDialog</name>
     </context>
 <context>
     <name>PaymentServer</name>
@@ -215,6 +161,9 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </context>
 <context>
     <name>QObject</name>
+    </context>
+<context>
+    <name>QObject::QObject</name>
     </context>
 <context>
     <name>QRImageWidget</name>
@@ -227,6 +176,10 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     </context>
 <context>
     <name>ReceiveRequestDialog</name>
+    <message>
+        <source>Label</source>
+        <translation>标签</translation>
+    </message>
     </context>
 <context>
     <name>RecentRequestsTableModel</name>
@@ -250,10 +203,16 @@ Signing is only possible with addresses of the type 'legacy'.</source>
     <name>SendCoinsEntry</name>
     </context>
 <context>
+    <name>SendConfirmationDialog</name>
+    </context>
+<context>
     <name>ShutdownWindow</name>
     </context>
 <context>
     <name>SignVerifyMessageDialog</name>
+    </context>
+<context>
+    <name>SplashScreen</name>
     </context>
 <context>
     <name>TrafficGraphWidget</name>
@@ -286,19 +245,12 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation>标签</translation>
     </message>
     <message>
-        <source>Address</source>
-        <translation>地址</translation>
-    </message>
-    <message>
         <source>Exporting Failed</source>
         <translation>导出失败</translation>
     </message>
     </context>
 <context>
     <name>UnitDisplayStatusBarControl</name>
-    </context>
-<context>
-    <name>WalletController</name>
     </context>
 <context>
     <name>WalletFrame</name>

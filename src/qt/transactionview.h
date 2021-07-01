@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2019 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,8 +6,6 @@
 #define WIDECOIN_QT_TRANSACTIONVIEW_H
 
 #include <qt/guiutil.h>
-
-#include <uint256.h>
 
 #include <QWidget>
 #include <QKeyEvent>
@@ -23,6 +21,7 @@ class QFrame;
 class QLineEdit;
 class QMenu;
 class QModelIndex;
+class QSignalMapper;
 class QTableView;
 QT_END_NAMESPACE
 
@@ -34,7 +33,7 @@ class TransactionView : public QWidget
     Q_OBJECT
 
 public:
-    explicit TransactionView(const PlatformStyle *platformStyle, QWidget *parent = nullptr);
+    explicit TransactionView(const PlatformStyle *platformStyle, QWidget *parent = 0);
 
     void setModel(WalletModel *model);
 
@@ -60,9 +59,9 @@ public:
     };
 
 private:
-    WalletModel *model{nullptr};
-    TransactionFilterProxy *transactionProxyModel{nullptr};
-    QTableView *transactionView{nullptr};
+    WalletModel *model;
+    TransactionFilterProxy *transactionProxyModel;
+    QTableView *transactionView;
 
     QComboBox *dateWidget;
     QComboBox *typeWidget;
@@ -71,22 +70,21 @@ private:
     QLineEdit *amountWidget;
 
     QMenu *contextMenu;
+    QSignalMapper *mapperThirdPartyTxUrls;
 
     QFrame *dateRangeWidget;
     QDateTimeEdit *dateFrom;
     QDateTimeEdit *dateTo;
-    QAction *abandonAction{nullptr};
-    QAction *bumpFeeAction{nullptr};
-    QAction *copyAddressAction{nullptr};
-    QAction *copyLabelAction{nullptr};
+    QAction *abandonAction;
+    QAction *bumpFeeAction;
 
     QWidget *createDateRangeWidget();
 
-    GUIUtil::TableViewLastColumnResizingFixer *columnResizingFixer{nullptr};
+    GUIUtil::TableViewLastColumnResizingFixer *columnResizingFixer;
 
-    virtual void resizeEvent(QResizeEvent* event) override;
+    virtual void resizeEvent(QResizeEvent* event);
 
-    bool eventFilter(QObject *obj, QEvent *event) override;
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private Q_SLOTS:
     void contextualMenu(const QPoint &);
@@ -110,8 +108,6 @@ Q_SIGNALS:
     /**  Fired when a message should be reported to the user */
     void message(const QString &title, const QString &message, unsigned int style);
 
-    void bumpedFee(const uint256& txid);
-
 public Q_SLOTS:
     void chooseDate(int idx);
     void chooseType(int idx);
@@ -120,7 +116,7 @@ public Q_SLOTS:
     void changedSearch();
     void exportClicked();
     void focusTransaction(const QModelIndex&);
-    void focusTransaction(const uint256& txid);
+
 };
 
 #endif // WIDECOIN_QT_TRANSACTIONVIEW_H

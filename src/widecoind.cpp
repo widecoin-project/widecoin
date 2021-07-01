@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2020 The Widecoin Core developers
+// Copyright (c) 2009-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,102 +10,124 @@
 #include <chainparams.h>
 #include <clientversion.h>
 #include <compat.h>
+#include <fs.h>
+#include <rpc/server.h>
 #include <init.h>
-#include <interfaces/chain.h>
-#include <node/context.h>
-#include <node/ui_interface.h>
 #include <noui.h>
-#include <shutdown.h>
-#include <util/ref.h>
-#include <util/strencodings.h>
-#include <util/system.h>
-#include <util/threadnames.h>
-#include <util/translation.h>
-#include <util/url.h>
+#include <util.h>
+#include <httpserver.h>
+#include <httprpc.h>
+#include <utilstrencodings.h>
 
-#include <functional>
+#include <boost/thread.hpp>
 
-const std::function<std::string(const char*)> G_TRANSLATION_FUN = nullptr;
-UrlDecodeFn* const URL_DECODE = urlDecode;
+#include <stdio.h>
 
-static void WaitForShutdown(NodeContext& node)
+/* Introduction text for doxygen: */
+
+/*! \mainpage Developer documentation
+ *
+ * \section intro_sec Introduction
+ *
+ * This is the developer documentation of the reference client for an experimental new digital currency called Widecoin (https://www.widecoin.org/),
+ * which enables instant payments to anyone, anywhere in the world. Widecoin uses peer-to-peer technology to operate
+ * with no central authority: managing transactions and issuing money are carried out collectively by the network.
+ *
+ * The software is a community-driven open source project, released under the MIT license.
+ *
+ * \section Navigation
+ * Use the buttons <code>Namespaces</code>, <code>Classes</code> or <code>Files</code> at the top of the page to start navigating the code.
+ */
+
+void WaitForShutdown()
 {
-    while (!ShutdownRequested())
+    bool fShutdown = ShutdownRequested();
+    // Tell the main threads to shutdown.
+    while (!fShutdown)
     {
-        UninterruptibleSleep(std::chrono::milliseconds{200});
+        MilliSleep(200);
+        fShutdown = ShutdownRequested();
     }
-    Interrupt(node);
+    Interrupt();
 }
 
-static bool AppInit(int argc, char* argv[])
+//////////////////////////////////////////////////////////////////////////////
+//
+// Start
+//
+bool AppInit(int argc, char* argv[])
 {
-    NodeContext node;
-
     bool fRet = false;
 
-    util::ThreadSetInternalName("init");
-
+    //
+    // Parameters
+    //
     // If Qt is used, parameters/widecoin.conf are parsed in qt/widecoin.cpp's main()
-    SetupServerArgs(node);
-    ArgsManager& args = *Assert(node.args);
-    std::string error;
-    if (!args.ParseParameters(argc, argv, error)) {
-        return InitError(Untranslated(strprintf("Error parsing command line arguments: %s\n", error)));
-    }
+    gArgs.ParseParameters(argc, argv);
 
     // Process help and version before taking care about datadir
-    if (HelpRequested(args) || args.IsArgSet("-version")) {
-        std::string strUsage = PACKAGE_NAME " version " + FormatFullVersion() + "\n";
+    if (gArgs.IsArgSet("-?") || gArgs.IsArgSet("-h") ||  gArgs.IsArgSet("-help") || gArgs.IsArgSet("-version"))
+    {
+        std::string strUsage = strprintf(_("%s Daemon"), _(PACKAGE_NAME)) + " " + _("version") + " " + FormatFullVersion() + "\n";
 
-        if (args.IsArgSet("-version")) {
-            strUsage += FormatParagraph(LicenseInfo()) + "\n";
-        } else {
-            strUsage += "\nUsage:  widecoind [options]                     Start " PACKAGE_NAME "\n";
-            strUsage += "\n" + args.GetHelpMessage();
+        if (gArgs.IsArgSet("-version"))
+        {
+            strUsage += FormatParagraph(LicenseInfo());
+        }
+        else
+        {
+            strUsage += "\n" + _("Usage:") + "\n" +
+                  "  widecoind [options]                     " + strprintf(_("Start %s Daemon"), _(PACKAGE_NAME)) + "\n";
+
+            strUsage += "\n" + HelpMessage(HMM_WIDECOIND);
         }
 
-        tfm::format(std::cout, "%s", strUsage);
+        fprintf(stdout, "%s", strUsage.c_str());
         return true;
     }
 
-    util::Ref context{node};
     try
     {
-        if (!CheckDataDirOption()) {
-            return InitError(Untranslated(strprintf("Specified data directory \"%s\" does not exist.\n", args.GetArg("-datadir", ""))));
+        if (!fs::is_directory(GetDataDir(false)))
+        {
+            fprintf(stderr, "Error: Specified data directory \"%s\" does not exist.\n", gArgs.GetArg("-datadir", "").c_str());
+            return false;
         }
-        if (!args.ReadConfigFiles(error, true)) {
-            return InitError(Untranslated(strprintf("Error reading configuration file: %s\n", error)));
-        }
-        // Check for chain settings (Params() calls are only valid after this clause)
-        try {
-            SelectParams(args.GetChainName());
+        try
+        {
+            gArgs.ReadConfigFile(gArgs.GetArg("-conf", WIDECOIN_CONF_FILENAME));
         } catch (const std::exception& e) {
-            return InitError(Untranslated(strprintf("%s\n", e.what())));
+            fprintf(stderr,"Error reading configuration file: %s\n", e.what());
+            return false;
+        }
+        // Check for -testnet or -regtest parameter (Params() calls are only valid after this clause)
+        try {
+            SelectParams(ChainNameFromCommandLine());
+        } catch (const std::exception& e) {
+            fprintf(stderr, "Error: %s\n", e.what());
+            return false;
         }
 
         // Error out when loose non-argument tokens are encountered on command line
         for (int i = 1; i < argc; i++) {
             if (!IsSwitchChar(argv[i][0])) {
-                return InitError(Untranslated(strprintf("Command line contains unexpected token '%s', see widecoind -h for a list of options.\n", argv[i])));
+                fprintf(stderr, "Error: Command line contains unexpected token '%s', see widecoind -h for a list of options.\n", argv[i]);
+                return false;
             }
         }
 
-        if (!args.InitSettings(error)) {
-            InitError(Untranslated(error));
-            return false;
-        }
-
         // -server defaults to true for widecoind but not for the GUI so do this here
-        args.SoftSetBoolArg("-server", true);
+        gArgs.SoftSetBoolArg("-server", true);
         // Set this early so that parameter interactions go to console
-        InitLogging(args);
-        InitParameterInteraction(args);
-        if (!AppInitBasicSetup(args)) {
+        InitLogging();
+        InitParameterInteraction();
+        if (!AppInitBasicSetup())
+        {
             // InitError will have been called with detailed error, which ends up on console
             return false;
         }
-        if (!AppInitParameterInteraction(args)) {
+        if (!AppInitParameterInteraction())
+        {
             // InitError will have been called with detailed error, which ends up on console
             return false;
         }
@@ -114,23 +136,19 @@ static bool AppInit(int argc, char* argv[])
             // InitError will have been called with detailed error, which ends up on console
             return false;
         }
-        if (args.GetBoolArg("-daemon", false)) {
+        if (gArgs.GetBoolArg("-daemon", false))
+        {
 #if HAVE_DECL_DAEMON
-#if defined(MAC_OSX)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-            tfm::format(std::cout, PACKAGE_NAME " starting\n");
+            fprintf(stdout, "Widecoin server starting\n");
 
             // Daemonize
             if (daemon(1, 0)) { // don't chdir (1), do close FDs (0)
-                return InitError(Untranslated(strprintf("daemon() failed: %s\n", strerror(errno))));
+                fprintf(stderr, "Error: daemon() failed: %s\n", strerror(errno));
+                return false;
             }
-#if defined(MAC_OSX)
-#pragma GCC diagnostic pop
-#endif
 #else
-            return InitError(Untranslated("-daemon is not supported on this operating system\n"));
+            fprintf(stderr, "Error: -daemon is not supported on this operating system\n");
+            return false;
 #endif // HAVE_DECL_DAEMON
         }
         // Lock data directory after daemonization
@@ -139,7 +157,7 @@ static bool AppInit(int argc, char* argv[])
             // If locking the data directory failed, exit immediately
             return false;
         }
-        fRet = AppInitInterfaces(node) && AppInitMain(context, node);
+        fRet = AppInitMain();
     }
     catch (const std::exception& e) {
         PrintExceptionContinue(&e, "AppInit()");
@@ -149,21 +167,17 @@ static bool AppInit(int argc, char* argv[])
 
     if (!fRet)
     {
-        Interrupt(node);
+        Interrupt();
     } else {
-        WaitForShutdown(node);
+        WaitForShutdown();
     }
-    Shutdown(node);
+    Shutdown();
 
     return fRet;
 }
 
 int main(int argc, char* argv[])
 {
-#ifdef WIN32
-    util::WinCmdLineArgs winArgs;
-    std::tie(argc, argv) = winArgs.get();
-#endif
     SetupEnvironment();
 
     // Connect widecoind signal handlers

@@ -6,19 +6,13 @@
 # test/functional/test_runner.py and test/util/widecoin-util-test.py
 
 [environment]
-PACKAGE_NAME=@PACKAGE_NAME@
-PACKAGE_BUGREPORT=@PACKAGE_BUGREPORT@
 SRCDIR=@abs_top_srcdir@
 BUILDDIR=@abs_top_builddir@
 EXEEXT=@EXEEXT@
-RPCAUTH=@abs_top_srcdir@/share/rpcauth/rpcauth.py
 
 [components]
 # Which components are enabled. These are commented out by `configure` if they were disabled when running config.
 @ENABLE_WALLET_TRUE@ENABLE_WALLET=true
-@USE_SQLITE_TRUE@USE_SQLITE=true
-@BUILD_WIDECOIN_CLI_TRUE@ENABLE_CLI=true
-@BUILD_WIDECOIN_WALLET_TRUE@ENABLE_WALLET_TOOL=true
+@BUILD_WIDECOIN_UTILS_TRUE@ENABLE_UTILS=true
 @BUILD_WIDECOIND_TRUE@ENABLE_WIDECOIND=true
-@ENABLE_FUZZ_TRUE@ENABLE_FUZZ=true
 @ENABLE_ZMQ_TRUE@ENABLE_ZMQ=true

@@ -1,12 +1,12 @@
-// Copyright (c) 2011-2019 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <qt/widecoinunits.h>
 
-#include <QStringList>
+#include <primitives/transaction.h>
 
-#include <cassert>
+#include <QStringList>
 
 WidecoinUnits::WidecoinUnits(QObject *parent):
         QAbstractListModel(parent),
@@ -20,7 +20,6 @@ QList<WidecoinUnits::Unit> WidecoinUnits::availableUnits()
     unitlist.append(WCN);
     unitlist.append(mWCN);
     unitlist.append(uWCN);
-    unitlist.append(SAT);
     return unitlist;
 }
 
@@ -31,7 +30,6 @@ bool WidecoinUnits::valid(int unit)
     case WCN:
     case mWCN:
     case uWCN:
-    case SAT:
         return true;
     default:
         return false;
@@ -44,8 +42,7 @@ QString WidecoinUnits::longName(int unit)
     {
     case WCN: return QString("WCN");
     case mWCN: return QString("mWCN");
-    case uWCN: return QString::fromUtf8("µWCN");
-    case SAT: return QString("sWCN");
+    case uWCN: return QString::fromUtf8("µWCN (bits)");
     default: return QString("???");
     }
 }
@@ -55,8 +52,7 @@ QString WidecoinUnits::shortName(int unit)
     switch(unit)
     {
     case uWCN: return QString::fromUtf8("bits");
-    case SAT: return QString("sat");
-    default: return longName(unit);
+    default:   return longName(unit);
     }
 }
 
@@ -67,7 +63,6 @@ QString WidecoinUnits::description(int unit)
     case WCN: return QString("Widecoins");
     case mWCN: return QString("mWCN (1 / 1" THIN_SP_UTF8 "000)");
     case uWCN: return QString("µWCN (bits) (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-    case SAT: return QString("sWCN (sat) (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
     default: return QString("???");
     }
 }
@@ -76,11 +71,10 @@ qint64 WidecoinUnits::factor(int unit)
 {
     switch(unit)
     {
-    case WCN: return 100000000;
+    case WCN:  return 100000000;
     case mWCN: return 100000;
     case uWCN: return 100;
-    case SAT: return 1;
-    default: return 100000000;
+    default:   return 100000000;
     }
 }
 
@@ -91,12 +85,11 @@ int WidecoinUnits::decimals(int unit)
     case WCN: return 8;
     case mWCN: return 5;
     case uWCN: return 2;
-    case SAT: return 0;
     default: return 0;
     }
 }
 
-QString WidecoinUnits::format(int unit, const CAmount& nIn, bool fPlus, SeparatorStyle separators, bool justify)
+QString WidecoinUnits::format(int unit, const CAmount& nIn, bool fPlus, SeparatorStyle separators)
 {
     // Note: not using straight sprintf here because we do NOT want
     // localized number formatting.
@@ -107,14 +100,15 @@ QString WidecoinUnits::format(int unit, const CAmount& nIn, bool fPlus, Separato
     int num_decimals = decimals(unit);
     qint64 n_abs = (n > 0 ? n : -n);
     qint64 quotient = n_abs / coin;
+    qint64 remainder = n_abs % coin;
     QString quotient_str = QString::number(quotient);
-    if (justify) quotient_str = quotient_str.rightJustified(16 - num_decimals, ' ');
+    QString remainder_str = QString::number(remainder).rightJustified(num_decimals, '0');
 
     // Use SI-style thin space separators as these are locale independent and can't be
     // confused with the decimal marker.
     QChar thin_sp(THIN_SP_CP);
     int q_size = quotient_str.size();
-    if (separators == SeparatorStyle::ALWAYS || (separators == SeparatorStyle::STANDARD && q_size > 4))
+    if (separators == separatorAlways || (separators == separatorStandard && q_size > 4))
         for (int i = 3; i < q_size; i += 3)
             quotient_str.insert(q_size - i, thin_sp);
 
@@ -122,14 +116,7 @@ QString WidecoinUnits::format(int unit, const CAmount& nIn, bool fPlus, Separato
         quotient_str.insert(0, '-');
     else if (fPlus && n > 0)
         quotient_str.insert(0, '+');
-
-    if (num_decimals > 0) {
-        qint64 remainder = n_abs % coin;
-        QString remainder_str = QString::number(remainder).rightJustified(num_decimals, '0');
-        return quotient_str + QString(".") + remainder_str;
-    } else {
-        return quotient_str;
-    }
+    return quotient_str + QString(".") + remainder_str;
 }
 
 
@@ -153,17 +140,6 @@ QString WidecoinUnits::formatHtmlWithUnit(int unit, const CAmount& amount, bool 
     return QString("<span style='white-space: nowrap;'>%1</span>").arg(str);
 }
 
-QString WidecoinUnits::formatWithPrivacy(int unit, const CAmount& amount, SeparatorStyle separators, bool privacy)
-{
-    assert(amount >= 0);
-    QString value;
-    if (privacy) {
-        value = format(unit, 0, false, separators, true).replace('0', '#');
-    } else {
-        value = format(unit, amount, false, separators, true);
-    }
-    return value + QString(" ") + shortName(unit);
-}
 
 bool WidecoinUnits::parse(int unit, const QString &value, CAmount *val_out)
 {

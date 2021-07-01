@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -6,11 +6,9 @@
 #define WIDECOIN_QT_UTILITYDIALOG_H
 
 #include <QDialog>
-#include <QWidget>
+#include <QObject>
 
-QT_BEGIN_NAMESPACE
-class QMainWindow;
-QT_END_NAMESPACE
+class WidecoinGUI;
 
 namespace Ui {
     class HelpMessageDialog;
@@ -43,11 +41,11 @@ class ShutdownWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit ShutdownWindow(QWidget *parent=nullptr, Qt::WindowFlags f=Qt::Widget);
-    static QWidget* showShutdownWindow(QMainWindow* window);
+    explicit ShutdownWindow(QWidget *parent=0, Qt::WindowFlags f=0);
+    static QWidget *showShutdownWindow(WidecoinGUI *window);
 
 protected:
-    void closeEvent(QCloseEvent *event) override;
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // WIDECOIN_QT_UTILITYDIALOG_H

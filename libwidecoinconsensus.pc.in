@@ -8,3 +8,4 @@ Description: Library for the Widecoin consensus protocol.
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lwidecoinconsensus
 Cflags: -I${includedir}
+Requires.private: libcrypto

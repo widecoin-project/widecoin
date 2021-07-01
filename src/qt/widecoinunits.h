@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2020 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -13,6 +13,22 @@
 // U+2009 THIN SPACE = UTF-8 E2 80 89
 #define REAL_THIN_SP_CP 0x2009
 #define REAL_THIN_SP_UTF8 "\xE2\x80\x89"
+#define REAL_THIN_SP_HTML "&thinsp;"
+
+// U+200A HAIR SPACE = UTF-8 E2 80 8A
+#define HAIR_SP_CP 0x200A
+#define HAIR_SP_UTF8 "\xE2\x80\x8A"
+#define HAIR_SP_HTML "&#8202;"
+
+// U+2006 SIX-PER-EM SPACE = UTF-8 E2 80 86
+#define SIXPEREM_SP_CP 0x2006
+#define SIXPEREM_SP_UTF8 "\xE2\x80\x86"
+#define SIXPEREM_SP_HTML "&#8198;"
+
+// U+2007 FIGURE SPACE = UTF-8 E2 80 87
+#define FIGURE_SP_CP 0x2007
+#define FIGURE_SP_UTF8 "\xE2\x80\x87"
+#define FIGURE_SP_HTML "&#8199;"
 
 // QMessageBox seems to have a bug whereby it doesn't display thin/hair spaces
 // correctly.  Workaround is to display a space in a small font.  If you
@@ -42,15 +58,14 @@ public:
     {
         WCN,
         mWCN,
-        uWCN,
-        SAT
+        uWCN
     };
 
-    enum class SeparatorStyle
+    enum SeparatorStyle
     {
-        NEVER,
-        STANDARD,
-        ALWAYS
+        separatorNever,
+        separatorStandard,
+        separatorAlways
     };
 
     //! @name Static API
@@ -72,13 +87,11 @@ public:
     //! Number of decimals left
     static int decimals(int unit);
     //! Format as string
-    static QString format(int unit, const CAmount& amount, bool plussign = false, SeparatorStyle separators = SeparatorStyle::STANDARD, bool justify = false);
+    static QString format(int unit, const CAmount& amount, bool plussign=false, SeparatorStyle separators=separatorStandard);
     //! Format as string (with unit)
-    static QString formatWithUnit(int unit, const CAmount& amount, bool plussign=false, SeparatorStyle separators=SeparatorStyle::STANDARD);
+    static QString formatWithUnit(int unit, const CAmount& amount, bool plussign=false, SeparatorStyle separators=separatorStandard);
     //! Format as HTML string (with unit)
-    static QString formatHtmlWithUnit(int unit, const CAmount& amount, bool plussign=false, SeparatorStyle separators=SeparatorStyle::STANDARD);
-    //! Format as string (with unit) of fixed length to preserve privacy, if it is set.
-    static QString formatWithPrivacy(int unit, const CAmount& amount, SeparatorStyle separators, bool privacy);
+    static QString formatHtmlWithUnit(int unit, const CAmount& amount, bool plussign=false, SeparatorStyle separators=separatorStandard);
     //! Parse string to coin amount
     static bool parse(int unit, const QString &value, CAmount *val_out);
     //! Gets title for amount column including current display unit if optionsModel reference available */
@@ -92,14 +105,17 @@ public:
         /** Unit identifier */
         UnitRole = Qt::UserRole
     };
-    int rowCount(const QModelIndex &parent) const override;
-    QVariant data(const QModelIndex &index, int role) const override;
+    int rowCount(const QModelIndex &parent) const;
+    QVariant data(const QModelIndex &index, int role) const;
     ///@}
 
     static QString removeSpaces(QString text)
     {
         text.remove(' ');
         text.remove(QChar(THIN_SP_CP));
+#if (THIN_SP_CP != REAL_THIN_SP_CP)
+        text.remove(QChar(REAL_THIN_SP_CP));
+#endif
         return text;
     }
 

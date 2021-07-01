@@ -1,18 +1,18 @@
-// Copyright (c) 2011-2020 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <qt/bantablemodel.h>
 
-#include <interfaces/node.h>
-#include <net_types.h> // For banmap_t
+#include <qt/clientmodel.h>
+#include <qt/guiconstants.h>
+#include <qt/guiutil.h>
 
-#include <utility>
+#include <sync.h>
+#include <utiltime.h>
 
-#include <QDateTime>
+#include <QDebug>
 #include <QList>
-#include <QModelIndex>
-#include <QVariant>
 
 bool BannedNodeLessThan::operator()(const CCombinedBan& left, const CCombinedBan& right) const
 {
@@ -39,19 +39,22 @@ class BanTablePriv
 public:
     /** Local cache of peer information */
     QList<CCombinedBan> cachedBanlist;
-    /** Column to sort nodes by (default to unsorted) */
-    int sortColumn{-1};
+    /** Column to sort nodes by */
+    int sortColumn;
     /** Order (ascending or descending) to sort nodes by */
     Qt::SortOrder sortOrder;
 
     /** Pull a full list of banned nodes from CNode into our cache */
-    void refreshBanlist(interfaces::Node& node)
+    void refreshBanlist()
     {
         banmap_t banMap;
-        node.getBanned(banMap);
+        if(g_connman)
+            g_connman->GetBanned(banMap);
 
         cachedBanlist.clear();
+#if QT_VERSION >= 0x040700
         cachedBanlist.reserve(banMap.size());
+#endif
         for (const auto& entry : banMap)
         {
             CCombinedBan banEntry;
@@ -62,7 +65,7 @@ public:
 
         if (sortColumn >= 0)
             // sort cachedBanlist (use stable sort to prevent rows jumping around unnecessarily)
-            std::stable_sort(cachedBanlist.begin(), cachedBanlist.end(), BannedNodeLessThan(sortColumn, sortOrder));
+            qStableSort(cachedBanlist.begin(), cachedBanlist.end(), BannedNodeLessThan(sortColumn, sortOrder));
     }
 
     int size() const
@@ -75,16 +78,18 @@ public:
         if (idx >= 0 && idx < cachedBanlist.size())
             return &cachedBanlist[idx];
 
-        return nullptr;
+        return 0;
     }
 };
 
-BanTableModel::BanTableModel(interfaces::Node& node, QObject* parent) :
+BanTableModel::BanTableModel(ClientModel *parent) :
     QAbstractTableModel(parent),
-    m_node(node)
+    clientModel(parent)
 {
     columns << tr("IP/Netmask") << tr("Banned Until");
     priv.reset(new BanTablePriv());
+    // default to unsorted
+    priv->sortColumn = -1;
 
     // load initial data
     refresh();
@@ -143,7 +148,8 @@ QVariant BanTableModel::headerData(int section, Qt::Orientation orientation, int
 
 Qt::ItemFlags BanTableModel::flags(const QModelIndex &index) const
 {
-    if (!index.isValid()) return Qt::NoItemFlags;
+    if(!index.isValid())
+        return 0;
 
     Qt::ItemFlags retval = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
     return retval;
@@ -162,7 +168,7 @@ QModelIndex BanTableModel::index(int row, int column, const QModelIndex &parent)
 void BanTableModel::refresh()
 {
     Q_EMIT layoutAboutToBeChanged();
-    priv->refreshBanlist(m_node);
+    priv->refreshBanlist();
     Q_EMIT layoutChanged();
 }
 
