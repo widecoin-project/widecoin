@@ -5,7 +5,7 @@ Setup
 ---------------------
 Widecoin Core is the original Widecoin client and it builds the backbone of the network. It downloads and, by default, stores the entire history of Widecoin transactions (which is currently more than 100 GBs); depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more.
 
-To download Widecoin Core, visit [widecoincore.org](https://widecoincore.org/en/releases/).
+To download Widecoin Core, visit [widecoin.org](https://widecoin.org/download-page.html#home).
 
 Running
 ---------------------
@@ -28,10 +28,8 @@ Drag Widecoin-Core to your applications folder, and then run Widecoin-Core.
 
 ### Need Help?
 
-* See the documentation at the [Widecoin Wiki](https://en.widecoin.it/wiki/Main_Page)
+* See the documentation at the [Widecoin Homepage](https://widecoin.org)
 for help and more information.
-* Ask for help on [#widecoin](http://webchat.freenode.net?channels=widecoin) on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net?channels=widecoin).
-* Ask for help on the [WidecoinTalk](https://widecointalk.org/) forums, in the [Technical Support board](https://widecointalk.org/index.php?board=4.0).
 
 Building
 ---------------------
@@ -60,11 +58,6 @@ The Widecoin repo's [root README](/README.md) contains relevant information on t
 - [BIPS](bips.md)
 - [Dnsseed Policy](dnsseed-policy.md)
 - [Benchmarking](benchmarking.md)
-
-### Resources
-* Discuss on the [WidecoinTalk](https://widecointalk.org/) forums, in the [Development & Technical Discussion board](https://widecointalk.org/index.php?board=6.0).
-* Discuss project-specific development on #widecoin-core-dev on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net/?channels=widecoin-core-dev).
-* Discuss general Widecoin development on #widecoin-dev on Freenode. If you don't have an IRC client use [webchat here](http://webchat.freenode.net/?channels=widecoin-dev).
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)

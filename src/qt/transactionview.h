@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2017 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WIDECOIN_QT_TRANSACTIONVIEW_H
-#define WIDECOIN_QT_TRANSACTIONVIEW_H
+#ifndef BITCOIN_QT_TRANSACTIONVIEW_H
+#define BITCOIN_QT_TRANSACTIONVIEW_H
 
 #include <qt/guiutil.h>
 
@@ -52,9 +52,9 @@ public:
     enum ColumnWidths {
         STATUS_COLUMN_WIDTH = 30,
         WATCHONLY_COLUMN_WIDTH = 23,
-        DATE_COLUMN_WIDTH = 120,
+        DATE_COLUMN_WIDTH = 139, // FIXME.WCN // was 120
         TYPE_COLUMN_WIDTH = 113,
-        AMOUNT_MINIMUM_COLUMN_WIDTH = 120,
+        AMOUNT_MINIMUM_COLUMN_WIDTH = 139, // FIXME.WCN // was 120
         MINIMUM_COLUMN_WIDTH = 23
     };
 
@@ -119,4 +119,4 @@ public Q_SLOTS:
 
 };
 
-#endif // WIDECOIN_QT_TRANSACTIONVIEW_H
+#endif // BITCOIN_QT_TRANSACTIONVIEW_H

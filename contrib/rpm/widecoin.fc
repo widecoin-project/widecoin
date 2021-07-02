@@ -1,8 +1,0 @@
-/usr/bin/widecoin-cli		--	gen_context(system_u:object_r:widecoin_exec_t,s0)
-/usr/sbin/widecoind		--	gen_context(system_u:object_r:widecoin_exec_t,s0)
-/usr/lib(64)?/widecoin/widecoind		--	gen_context(system_u:object_r:widecoin_exec_t,s0)
-
-/etc/widecoin(/.*)?		gen_context(system_u:object_r:widecoin_conf_t,s0)
-/var/lib/widecoin(/.*)?		gen_context(system_u:object_r:widecoin_var_lib_t,s0)
-
-(/var)?/run/widecoind(/.*)?   gen_context(system_u:object_r:widecoin_var_run_t,s0)

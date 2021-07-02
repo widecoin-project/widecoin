@@ -1,9 +1,9 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2017 The Widecoin Core developers
+// Copyright (c) 2009-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#ifndef WIDECOIN_POLICYESTIMATOR_H
-#define WIDECOIN_POLICYESTIMATOR_H
+#ifndef BITCOIN_POLICYESTIMATOR_H
+#define BITCOIN_POLICYESTIMATOR_H
 
 #include <amount.h>
 #include <policy/feerate.h>
@@ -295,4 +295,4 @@ private:
     FastRandomContext insecure_rand;
 };
 
-#endif /*WIDECOIN_POLICYESTIMATOR_H */
+#endif /*BITCOIN_POLICYESTIMATOR_H */

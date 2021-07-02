@@ -1,10 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2017 The Widecoin Core developers
+// Copyright (c) 2009-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WIDECOIN_WALLET_FEES_H
-#define WIDECOIN_WALLET_FEES_H
+#ifndef BITCOIN_WALLET_FEES_H
+#define BITCOIN_WALLET_FEES_H
 
 #include <amount.h>
 
@@ -31,4 +31,4 @@ CAmount GetMinimumFee(unsigned int nTxBytes, const CCoinControl& coin_control, c
  */
 CFeeRate GetDiscardRate(const CBlockPolicyEstimator& estimator);
 
-#endif // WIDECOIN_WALLET_FEES_H
+#endif // BITCOIN_WALLET_FEES_H

@@ -1,9 +1,9 @@
-// Copyright (c) 2015-2017 The Widecoin Core developers
+// Copyright (c) 2015-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WIDECOIN_MERKLE
-#define WIDECOIN_MERKLE
+#ifndef BITCOIN_MERKLE
+#define BITCOIN_MERKLE
 
 #include <stdint.h>
 #include <vector>

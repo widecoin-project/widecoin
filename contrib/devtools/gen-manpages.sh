@@ -15,8 +15,8 @@ WIDECOINQT=${WIDECOINQT:-$SRCDIR/qt/widecoin-qt}
 WCNVER=($($WIDECOINCLI --version | head -n1 | awk -F'[ -]' '{ print $6, $7 }'))
 
 # Create a footer file with copyright content.
-# This gets autodetected fine for widecoind if --version-string is not set,
-# but has different outcomes for widecoin-qt and widecoin-cli.
+# This gets autodetected fine for bitcoind if --version-string is not set,
+# but has different outcomes for bitcoin-qt and bitcoin-cli.
 echo "[COPYRIGHT]" > footer.h2m
 $WIDECOIND --version | sed -n '1!p' >> footer.h2m
 

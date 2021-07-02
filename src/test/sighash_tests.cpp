@@ -1,4 +1,4 @@
-// Copyright (c) 2013-2017 The Widecoin Core developers
+// Copyright (c) 2013-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +10,7 @@
 #include <script/script.h>
 #include <serialize.h>
 #include <streams.h>
-#include <test/test_widecoin.h>
+#include <test/test_bitcoin.h>
 #include <util.h>
 #include <utilstrencodings.h>
 #include <version.h>

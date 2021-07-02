@@ -1,9 +1,9 @@
-// Copyright (c) 2011-2017 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WIDECOIN_QT_WALLETMODEL_H
-#define WIDECOIN_QT_WALLETMODEL_H
+#ifndef BITCOIN_QT_WALLETMODEL_H
+#define BITCOIN_QT_WALLETMODEL_H
 
 #include <qt/paymentrequestplus.h>
 #include <qt/walletmodeltransaction.h>
@@ -96,7 +96,7 @@ public:
     }
 };
 
-/** Interface to Widecoin wallet from Qt view code. */
+/** Interface to Bitcoin wallet from Qt view code. */
 class WalletModel : public QObject
 {
     Q_OBJECT
@@ -287,4 +287,4 @@ public Q_SLOTS:
     void pollBalanceChanged();
 };
 
-#endif // WIDECOIN_QT_WALLETMODEL_H
+#endif // BITCOIN_QT_WALLETMODEL_H

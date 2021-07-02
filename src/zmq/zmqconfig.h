@@ -1,12 +1,12 @@
-// Copyright (c) 2014-2017 The Widecoin Core developers
+// Copyright (c) 2014-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WIDECOIN_ZMQ_ZMQCONFIG_H
-#define WIDECOIN_ZMQ_ZMQCONFIG_H
+#ifndef BITCOIN_ZMQ_ZMQCONFIG_H
+#define BITCOIN_ZMQ_ZMQCONFIG_H
 
 #if defined(HAVE_CONFIG_H)
-#include <config/widecoin-config.h>
+#include <config/bitcoin-config.h>
 #endif
 
 #include <stdarg.h>
@@ -21,4 +21,4 @@
 
 void zmqError(const char *str);
 
-#endif // WIDECOIN_ZMQ_ZMQCONFIG_H
+#endif // BITCOIN_ZMQ_ZMQCONFIG_H

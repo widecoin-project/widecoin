@@ -33,8 +33,8 @@ If you're using the automated script (found in [contrib/gitian-build.sh](/contri
 Check out the source code in the following directory hierarchy.
 
     cd /path/to/your/toplevel/build
-    git clone https://github.com/widecoin-core/gitian.sigs.git
-    git clone https://github.com/widecoin-core/widecoin-detached-sigs.git
+    git clone https://github.com/widecoin/gitian.sigs.git
+    git clone https://github.com/widecoin/widecoin-detached-sigs.git
     git clone https://github.com/devrandom/gitian-builder.git
     git clone https://github.com/widecoin/widecoin.git
 
@@ -84,7 +84,7 @@ Ensure gitian-builder is up-to-date:
 
     pushd ./gitian-builder
     mkdir -p inputs
-    wget -P inputs https://widecoincore.org/cfields/osslsigncode-Backports-to-1.7.1.patch
+    wget -P inputs https://bitcoincore.org/cfields/osslsigncode-Backports-to-1.7.1.patch
     wget -P inputs http://downloads.sourceforge.net/project/osslsigncode/osslsigncode/osslsigncode-1.7.1.tar.gz
     popd
 
@@ -195,7 +195,7 @@ Codesigner only: Commit the detached codesign payloads:
 Non-codesigners: wait for Windows/OS X detached signatures:
 
 - Once the Windows/OS X builds each have 3 matching signatures, they will be signed with their respective release keys.
-- Detached signatures will then be committed to the [widecoin-detached-sigs](https://github.com/widecoin-core/widecoin-detached-sigs) repository, which can be combined with the unsigned apps to create signed binaries.
+- Detached signatures will then be committed to the [widecoin-detached-sigs](https://github.com/widecoin/widecoin-detached-sigs) repository, which can be combined with the unsigned apps to create signed binaries.
 
 Create (and optionally verify) the signed OS X binary:
 
@@ -276,34 +276,24 @@ widecoin.org (see below for widecoin.org update instructions).
 - Update widecoin.org version
 
   - First, check to see if the Widecoin.org maintainers have prepared a
-    release: https://github.com/widecoin-dot-org/widecoin.org/labels/Releases
+    release: https://github.com/widecoin/widecoin/releases
 
       - If they have, it will have previously failed their Travis CI
         checks because the final release files weren't uploaded.
         Trigger a Travis CI rebuild---if it passes, merge.
 
   - If they have not prepared a release, follow the Widecoin.org release
-    instructions: https://github.com/widecoin-dot-org/widecoin.org#release-notes
+    instructions: https://github.com/widecoin/widecoin/blob/master/doc/release-notes.md
 
   - After the pull request is merged, the website will automatically show the newest version within 15 minutes, as well
     as update the OS download links. Ping @saivann/@harding (saivann/harding on Freenode) in case anything goes wrong
 
 - Announce the release:
 
-  - widecoin-dev and widecoin-core-dev mailing list
+  - discord channel
 
-  - Widecoin Core announcements list https://widecoincore.org/en/list/announcements/join/
+  - twitter @cpcuhain
 
-  - widecoincore.org blog post
-
-  - Update title of #widecoin on Freenode IRC
-
-  - Optionally twitter, reddit /r/Widecoin, ... but this will usually sort out itself
-
-  - Notify BlueMatt so that he can start building [the PPAs](https://launchpad.net/~widecoin/+archive/ubuntu/widecoin)
-
-  - Archive release notes for the new version to `doc/release-notes/` (branch `master` and branch of the release)
-
-  - Create a [new GitHub release](https://github.com/widecoin/widecoin/releases/new) with a link to the archived release notes.
+  - widecoin.org
 
   - Celebrate

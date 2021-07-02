@@ -1,6 +1,0 @@
-usr/local/bin/widecoin-qt usr/bin
-share/pixmaps/widecoin32.xpm usr/share/pixmaps
-share/pixmaps/widecoin16.xpm usr/share/pixmaps
-share/pixmaps/widecoin128.png usr/share/pixmaps
-debian/widecoin-qt.desktop usr/share/applications
-debian/widecoin-qt.protocol usr/share/kde4/services/

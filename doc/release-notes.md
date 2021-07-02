@@ -1,6 +1,6 @@
-Widecoin Core version 0.16.x is now available from:
+Widecoin Core version 0.16.3 is now available from:
 
-  <https://widecoincore.org/bin/widecoin-core-0.16.x/>
+  <https://github.com/widecoin/widecoin/releases/latest>
 
 This is a new minor version release, with various bugfixes
 as well as updated translations.
@@ -11,7 +11,7 @@ Please report bugs using the issue tracker at GitHub:
 
 To receive security and update notifications, please subscribe to:
 
-  <https://widecoincore.org/en/list/announcements/join/>
+  <https://twitter.com/widecoin>
 
 How to Upgrade
 ==============
@@ -49,22 +49,42 @@ frequently tested on them.
 Notable changes
 ===============
 
-(to be filled in)
+Denial-of-Service vulnerability
+-------------------------------
 
-0.16.x change log
+A denial-of-service vulnerability exploitable by miners has been discovered in
+Widecoin Core versions 0.14.0 up to 0.16.2. It is recommended to upgrade any of
+the vulnerable versions to 0.16.3 as soon as possible.
+
+0.16.3 change log
 ------------------
 
-(to be filled in)
+### Consensus
+- #14249 `696b936` Fix crash bug with duplicate inputs within a transaction (TheBlueMatt, sdaftuar)
+
+### RPC and other APIs
+- #13547 `212ef1f` Make `signrawtransaction*` give an error when amount is needed but missing (ajtowns)
+
+### Miscellaneous
+- #13655 `1cdbea7` bitcoinconsensus: invalid flags error should be set to `bitcoinconsensus_err` (afk11)
+
+### Documentation
+- #13844 `11b9dbb` correct the help output for -prune (hebasto)
 
 Credits
 =======
 
 Thanks to everyone who directly contributed to this release:
 
-(to be filled in)
+- Anthony Towns
+- Hennadii Stepanov
+- Matt Corallo
+- Suhas Daftuar
+- Thomas Kerin
+- Wladimir J. van der Laan
 
 And to those that reported security issues:
 
-(to be filled in)
+- beardnboobies
 
-As well as everyone that helped translating on [Transifex](https://www.transifex.com/projects/p/widecoin/).
+As well as everyone that helped translating on [Transifex](https://www.transifex.com/projects/p/bitcoin/).

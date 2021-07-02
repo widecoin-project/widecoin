@@ -1,6 +1,6 @@
 #include <qt/test/wallettests.h>
 
-#include <qt/widecoinamountfield.h>
+#include <qt/bitcoinamountfield.h>
 #include <qt/callback.h>
 #include <qt/optionsmodel.h>
 #include <qt/platformstyle.h>
@@ -10,7 +10,7 @@
 #include <qt/transactiontablemodel.h>
 #include <qt/transactionview.h>
 #include <qt/walletmodel.h>
-#include <test/test_widecoin.h>
+#include <test/test_bitcoin.h>
 #include <validation.h>
 #include <wallet/wallet.h>
 #include <qt/overviewpage.h>
@@ -71,7 +71,7 @@ uint256 SendCoins(CWallet& wallet, SendCoinsDialog& sendCoinsDialog, const CTxDe
     QVBoxLayout* entries = sendCoinsDialog.findChild<QVBoxLayout*>("entries");
     SendCoinsEntry* entry = qobject_cast<SendCoinsEntry*>(entries->itemAt(0)->widget());
     entry->findChild<QValidatedLineEdit*>("payTo")->setText(QString::fromStdString(EncodeDestination(address)));
-    entry->findChild<WidecoinAmountField*>("payAmount")->setValue(amount);
+    entry->findChild<BitcoinAmountField*>("payAmount")->setValue(amount);
     sendCoinsDialog.findChild<QFrame*>("frameFee")
         ->findChild<QFrame*>("frameFeeSelection")
         ->findChild<QCheckBox*>("optInRBF")
@@ -146,9 +146,9 @@ void BumpFee(TransactionView& view, const uint256& txid, bool expectDisabled, st
 //
 // This also requires overriding the default minimal Qt platform:
 //
-//     src/qt/test/test_widecoin-qt -platform xcb      # Linux
-//     src/qt/test/test_widecoin-qt -platform windows  # Windows
-//     src/qt/test/test_widecoin-qt -platform cocoa    # macOS
+//     src/qt/test/test_bitcoin-qt -platform xcb      # Linux
+//     src/qt/test/test_bitcoin-qt -platform windows  # Windows
+//     src/qt/test/test_bitcoin-qt -platform cocoa    # macOS
 void TestGUI()
 {
     g_address_type = OUTPUT_TYPE_P2SH_SEGWIT;
@@ -208,7 +208,7 @@ void TestGUI()
     QString balanceText = balanceLabel->text();
     int unit = walletModel.getOptionsModel()->getDisplayUnit();
     CAmount balance = walletModel.getBalance();
-    QString balanceComparison = WidecoinUnits::formatWithUnit(unit, balance, false, WidecoinUnits::separatorAlways);
+    QString balanceComparison = BitcoinUnits::formatWithUnit(unit, balance, false, BitcoinUnits::separatorAlways);
     QCOMPARE(balanceText, balanceComparison);
 
     // Check Request Payment button
@@ -221,7 +221,7 @@ void TestGUI()
     labelInput->setText("TEST_LABEL_1");
 
     // Amount input
-    WidecoinAmountField* amountInput = receiveCoinsDialog.findChild<WidecoinAmountField*>("reqAmount");
+    BitcoinAmountField* amountInput = receiveCoinsDialog.findChild<BitcoinAmountField*>("reqAmount");
     amountInput->setValue(1);
 
     // Message input

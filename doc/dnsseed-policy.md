@@ -44,11 +44,11 @@ related to the DNS seed operation.
 If these expectations cannot be satisfied the operator should
 discontinue providing services and contact the active Widecoin
 Core development team as well as posting on
-[widecoin-dev](https://lists.linuxfoundation.org/mailman/listinfo/widecoin-dev).
+[Widecoin issue](https://github.com/widecoin/widecoin/issues).
 
 Behavior outside of these expectations may be reasonable in some
 situations but should be discussed in public in advance.
 
 See also
 ----------
-- [widecoin-seeder](https://github.com/sipa/widecoin-seeder) is a reference implementation of a DNS seed.
+- [widecoin-seeder](https://github.com/widecoin/widecoin-seeder) is a reference implementation of a DNS seed.

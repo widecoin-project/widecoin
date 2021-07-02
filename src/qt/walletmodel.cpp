@@ -1,4 +1,5 @@
-// Copyright (c) 2011-2017 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Bitcoin Core developers
+// Copyright (c) 2018-2020 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -113,6 +114,8 @@ void WalletModel::updateStatus()
         Q_EMIT encryptionStatusChanged(newEncryptionStatus);
 }
 
+// FIXME.WCN // SURE?
+// 120x faster than bitcoin
 void WalletModel::pollBalanceChanged()
 {
     // Get required locks upfront. This avoids the GUI from getting stuck on
@@ -129,12 +132,32 @@ void WalletModel::pollBalanceChanged()
     {
         fForceCheckBalanceChanged = false;
 
-        // Balance and number of transactions might have changed
-        cachedNumBlocks = chainActive.Height();
+        // BEGIN - DEBUG for checking height?
+        /*
+        LogPrint(BCLog::QT, "GUI:   %d = height \n", chainActive.Height());
+        LogPrint(BCLog::QT, "GUI:   %d = cached \n", cachedNumBlocks);
+        LogPrint(BCLog::QT, "GUI: height - cached = %d \n", (int)(chainActive.Height() - cachedNumBlocks));
+        */
+        // END - DEBUG for checking height?
 
-        checkBalanceChanged();
-        if(transactionTableModel)
-            transactionTableModel->updateConfirmations();
+        // FIXME.WCN // SURE?
+        // update every blocks >> 12 blocks // 5*12 = 60s
+        if(chainActive.Height() - cachedNumBlocks >= 12)
+        {
+            // BEGIN - DEBUG for checking polled?
+            /*
+            LogPrint(BCLog::QT, "GUI: \033[0;31m  pollBalanceChanged:  \033[0m \n"); // red
+            LogPrint(BCLog::QT, "GUI: height - cached = %d \n", (int)(chainActive.Height() - cachedNumBlocks));
+            */
+            // END - DEBUG for checking polled?
+
+            // Balance and number of transactions might have changed
+            cachedNumBlocks = chainActive.Height();
+
+            checkBalanceChanged();
+            if(transactionTableModel)
+                transactionTableModel->updateConfirmations();
+        }
     }
 }
 
@@ -234,7 +257,7 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
             total += subtotal;
         }
         else
-        {   // User-entered widecoin address / amount:
+        {   // User-entered bitcoin address / amount:
             if(!validateAddress(rcp.address))
             {
                 return InvalidAddress;
@@ -325,7 +348,7 @@ WalletModel::SendCoinsReturn WalletModel::sendCoins(WalletModelTransaction &tran
                 rcp.paymentRequest.SerializeToString(&value);
                 newTx->vOrderForm.push_back(make_pair(key, value));
             }
-            else if (!rcp.message.isEmpty()) // Message from normal widecoin:URI (widecoin:123...?message=example)
+            else if (!rcp.message.isEmpty()) // Message from normal bitcoin:URI (bitcoin:123...?message=example)
                 newTx->vOrderForm.push_back(make_pair("Message", rcp.message.toStdString()));
         }
 
@@ -683,15 +706,15 @@ bool WalletModel::bumpFee(uint256 hash)
     questionString.append("<tr><td>");
     questionString.append(tr("Current fee:"));
     questionString.append("</td><td>");
-    questionString.append(WidecoinUnits::formatHtmlWithUnit(getOptionsModel()->getDisplayUnit(), old_fee));
+    questionString.append(BitcoinUnits::formatHtmlWithUnit(getOptionsModel()->getDisplayUnit(), old_fee));
     questionString.append("</td></tr><tr><td>");
     questionString.append(tr("Increase:"));
     questionString.append("</td><td>");
-    questionString.append(WidecoinUnits::formatHtmlWithUnit(getOptionsModel()->getDisplayUnit(), new_fee - old_fee));
+    questionString.append(BitcoinUnits::formatHtmlWithUnit(getOptionsModel()->getDisplayUnit(), new_fee - old_fee));
     questionString.append("</td></tr><tr><td>");
     questionString.append(tr("New fee:"));
     questionString.append("</td><td>");
-    questionString.append(WidecoinUnits::formatHtmlWithUnit(getOptionsModel()->getDisplayUnit(), new_fee));
+    questionString.append(BitcoinUnits::formatHtmlWithUnit(getOptionsModel()->getDisplayUnit(), new_fee));
     questionString.append("</td></tr></table>");
     SendConfirmationDialog confirmationDialog(tr("Confirm fee bump"), questionString);
     confirmationDialog.exec();

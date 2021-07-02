@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2017 The Widecoin Core developers
+// Copyright (c) 2009-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -7,11 +7,11 @@
  * Server/client environment: argument handling, config file parsing,
  * logging, thread wrappers, startup time
  */
-#ifndef WIDECOIN_UTIL_H
-#define WIDECOIN_UTIL_H
+#ifndef BITCOIN_UTIL_H
+#define BITCOIN_UTIL_H
 
 #if defined(HAVE_CONFIG_H)
-#include <config/widecoin-config.h>
+#include <config/bitcoin-config.h>
 #endif
 
 #include <compat.h>
@@ -49,6 +49,7 @@ public:
 
 extern bool fPrintToConsole;
 extern bool fPrintToDebugLog;
+extern bool fPruneDebugLog; // FIXME.WCN // prune debug.log
 
 extern bool fLogTimestamps;
 extern bool fLogTimeMicros;
@@ -56,8 +57,8 @@ extern bool fLogIPs;
 extern std::atomic<bool> fReopenDebugLog;
 extern CTranslationInterface translationInterface;
 
-extern const char * const WIDECOIN_CONF_FILENAME;
-extern const char * const WIDECOIN_PID_FILENAME;
+extern const char * const BITCOIN_CONF_FILENAME;
+extern const char * const BITCOIN_PID_FILENAME;
 
 extern std::atomic<uint32_t> logCategories;
 
@@ -348,4 +349,4 @@ std::unique_ptr<T> MakeUnique(Args&&... args)
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
-#endif // WIDECOIN_UTIL_H
+#endif // BITCOIN_UTIL_H

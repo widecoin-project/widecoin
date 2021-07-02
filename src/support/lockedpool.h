@@ -1,9 +1,9 @@
-// Copyright (c) 2016-2017 The Widecoin Core developers
+// Copyright (c) 2016-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WIDECOIN_SUPPORT_LOCKEDPOOL_H
-#define WIDECOIN_SUPPORT_LOCKEDPOOL_H
+#ifndef BITCOIN_SUPPORT_LOCKEDPOOL_H
+#define BITCOIN_SUPPORT_LOCKEDPOOL_H
 
 #include <stdint.h>
 #include <list>
@@ -228,4 +228,4 @@ private:
     static std::once_flag init_flag;
 };
 
-#endif // WIDECOIN_SUPPORT_LOCKEDPOOL_H
+#endif // BITCOIN_SUPPORT_LOCKEDPOOL_H

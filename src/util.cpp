@@ -1,5 +1,5 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
-// Copyright (c) 2009-2017 The Widecoin Core developers
+// Copyright (c) 2009-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -82,13 +82,14 @@
 // Application startup time (used for uptime calculation)
 const int64_t nStartupTime = GetTime();
 
-const char * const WIDECOIN_CONF_FILENAME = "widecoin.conf";
-const char * const WIDECOIN_PID_FILENAME = "widecoind.pid";
+const char * const BITCOIN_CONF_FILENAME = "widecoin.conf";
+const char * const BITCOIN_PID_FILENAME = "widecoind.pid";
 const char * const DEFAULT_DEBUGLOGFILE = "debug.log";
 
 ArgsManager gArgs;
 bool fPrintToConsole = false;
 bool fPrintToDebugLog = true;
+bool fPruneDebugLog = false; // FIXME.WCN // prune debug.log
 
 bool fLogTimestamps = DEFAULT_LOGTIMESTAMPS;
 bool fLogTimeMicros = DEFAULT_LOGTIMEMICROS;
@@ -372,6 +373,45 @@ int LogPrintStr(const std::string &str)
 
             ret = FileWriteStr(strTimestamped, fileout);
         }
+
+        // FIXME.WCN // prune debug.log
+        // BEGIN - PRUNE DEBUG.LOG
+        // If debug.log is over 10 MB (10*1000*1000), shrink to 1 MB (1*1000*1000)
+        // see "void ShrinkDebugFile()"
+        if (fPrintToDebugLog && fPruneDebugLog && !fPrintToConsole)
+        {
+            {
+                // Amount of debug.log to save at end when shrinking (must fit in memory)
+                constexpr size_t RECENT_DEBUG_HISTORY_SIZE = 1*1000*1000; // was (10 * 1000000)
+                // Scroll debug.log if it's getting too big
+                fs::path pathLog = GetDebugLogPath();
+                FILE* file = fsbridge::fopen(pathLog, "r");
+                // If debug.log file is more than 10x bigger the RECENT_DEBUG_HISTORY_SIZE
+                // trim it down by saving only the last RECENT_DEBUG_HISTORY_SIZE bytes
+                if (file && fs::file_size(pathLog) > 10 * RECENT_DEBUG_HISTORY_SIZE) // was (11 * (RECENT_DEBUG_HISTORY_SIZE / 10)))
+                {
+                    // BEGIN - DEBUG FILESIZE
+                    printf("%s DEBUG.LOG PRUNED at %lu\n", DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()).c_str(), fs::file_size(pathLog));
+                    // END - DEBUG FILESIZE
+
+                    // Restart the file with some of the end
+                    std::vector<char> vch(RECENT_DEBUG_HISTORY_SIZE, 0);
+                    fseek(file, -((long)vch.size()), SEEK_END);
+                    int nBytes = fread(vch.data(), 1, vch.size(), file);
+                    fclose(file);
+
+                    file = fsbridge::fopen(pathLog, "w");
+                    if (file)
+                    {
+                        fwrite(vch.data(), 1, nBytes, file);
+                        fclose(file);
+                    }
+                }
+                else if (file != nullptr)
+                    fclose(file);
+            }
+        }
+        // END - PRUNE LOG
     }
     return ret;
 }
@@ -577,10 +617,10 @@ void PrintExceptionContinue(const std::exception* pex, const char* pszThread)
 
 fs::path GetDefaultDataDir()
 {
-    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Widecoin
-    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Widecoin
-    // Mac: ~/Library/Application Support/Widecoin
-    // Unix: ~/.widecoin
+    // Windows < Vista: C:\Documents and Settings\Username\Application Data\Bitcoin
+    // Windows >= Vista: C:\Users\Username\AppData\Roaming\Bitcoin
+    // Mac: ~/Library/Application Support/Bitcoin
+    // Unix: ~/.bitcoin
 #ifdef WIN32
     // Windows
     return GetSpecialFolderPath(CSIDL_APPDATA) / "Widecoin";
@@ -658,7 +698,7 @@ void ArgsManager::ReadConfigFile(const std::string& confPath)
 {
     fs::ifstream streamConfig(GetConfigFile(confPath));
     if (!streamConfig.good())
-        return; // No widecoin.conf file is OK
+        return; // No bitcoin.conf file is OK
 
     {
         LOCK(cs_args);
@@ -667,7 +707,7 @@ void ArgsManager::ReadConfigFile(const std::string& confPath)
 
         for (boost::program_options::detail::config_file_iterator it(streamConfig, setOptions), end; it != end; ++it)
         {
-            // Don't overwrite existing settings so command line settings override widecoin.conf
+            // Don't overwrite existing settings so command line settings override bitcoin.conf
             std::string strKey = std::string("-") + it->string_key;
             std::string strValue = it->value[0];
             InterpretNegativeSetting(strKey, strValue);
@@ -686,7 +726,7 @@ void ArgsManager::ReadConfigFile(const std::string& confPath)
 #ifndef WIN32
 fs::path GetPidFile()
 {
-    fs::path pathPidFile(gArgs.GetArg("-pid", WIDECOIN_PID_FILENAME));
+    fs::path pathPidFile(gArgs.GetArg("-pid", BITCOIN_PID_FILENAME));
     if (!pathPidFile.is_complete()) pathPidFile = GetDataDir() / pathPidFile;
     return pathPidFile;
 }
@@ -947,10 +987,6 @@ int GetNumCores()
 {
     std::string strCopyrightHolders = strPrefix + strprintf(_(COPYRIGHT_HOLDERS), _(COPYRIGHT_HOLDERS_SUBSTITUTION));
 
-    // Check for untranslated substitution to make sure Widecoin Core copyright is not removed by accident
-    if (strprintf(COPYRIGHT_HOLDERS, COPYRIGHT_HOLDERS_SUBSTITUTION).find("Widecoin Core") == std::string::npos) {
-        strCopyrightHolders += "\n" + strPrefix + "The Widecoin Core developers";
-    }
     return strCopyrightHolders;
 }*/
 std::string CopyrightHolders(const std::string& strPrefix)
@@ -968,6 +1004,7 @@ std::string CopyrightHolders(const std::string& strPrefix)
     strCopyrightHolders += "\n" + strYear + "The Bitcoin Core developers";
     return strCopyrightHolders;
 }
+
 // Obtain the application startup time (used for uptime calculation)
 int64_t GetStartupTime()
 {

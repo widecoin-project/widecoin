@@ -30,8 +30,8 @@ config.log
 config.status
 configure
 libtool
-src/config/widecoin-config.h
-src/config/widecoin-config.h.in
+src/config/bitcoin-config.h
+src/config/bitcoin-config.h.in
 src/config/stamp-h1
 share/setup.nsi
 share/qt/Info.plist
@@ -44,11 +44,11 @@ src/qt/forms/ui_*.h
 
 src/qt/test/moc*.cpp
 
-src/qt/widecoin-qt.config
-src/qt/widecoin-qt.creator
-src/qt/widecoin-qt.creator.user
-src/qt/widecoin-qt.files
-src/qt/widecoin-qt.includes
+src/qt/bitcoin-qt.config
+src/qt/bitcoin-qt.creator
+src/qt/bitcoin-qt.creator.user
+src/qt/bitcoin-qt.files
+src/qt/bitcoin-qt.includes
 
 .deps
 .dirstamp
@@ -62,7 +62,6 @@ src/qt/widecoin-qt.includes
 *.o
 *.o-*
 *.patch
-!depends/patches/**/*.patch
 *.a
 *.pb.cc
 *.pb.h
@@ -115,5 +114,11 @@ test/cache/*
 
 /doc/doxygen/
 
-libwidecoinconsensus.pc
+libbitcoinconsensus.pc
 contrib/devtools/split-debug.sh
+
+# cryptozeny tools
+init.sh
+
+# linearlize (bootstrap)
+contrib/linearize/hashlist.txt

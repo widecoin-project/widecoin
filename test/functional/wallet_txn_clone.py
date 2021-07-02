@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-# Copyright (c) 2014-2017 The Widecoin Core developers
+# Copyright (c) 2014-2017 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the wallet accounts properly when there are cloned transactions with malleated scriptsigs."""
 
-from test_framework.test_framework import WidecoinTestFramework
+from test_framework.test_framework import BitcoinTestFramework
 from test_framework.util import *
 
-class TxnMallTest(WidecoinTestFramework):
+class TxnMallTest(BitcoinTestFramework):
     def set_test_params(self):
         self.num_nodes = 4
 
@@ -29,7 +29,7 @@ class TxnMallTest(WidecoinTestFramework):
         else:
             output_type="legacy"
 
-        # All nodes should start with 1,250 WCN:
+        # All nodes should start with 1,250 BTC:
         starting_balance = 1250
         for i in range(4):
             assert_equal(self.nodes[i].getbalance(), starting_balance)
@@ -66,7 +66,7 @@ class TxnMallTest(WidecoinTestFramework):
 
         # createrawtransaction randomizes the order of its outputs, so swap them if necessary.
         # output 0 is at version+#inputs+input+sigstub+sequence+#outputs
-        # 40 WCN serialized is 00286bee00000000
+        # 40 BTC serialized is 00286bee00000000
         pos0 = 2*(4+1+36+1+4+1)
         hex40 = "00286bee00000000"
         output_len = 16 + 2 + 2 * int("0x" + clone_raw[pos0 + 16 : pos0 + 16 + 2], 0)
@@ -89,7 +89,7 @@ class TxnMallTest(WidecoinTestFramework):
         tx1 = self.nodes[0].gettransaction(txid1)
         tx2 = self.nodes[0].gettransaction(txid2)
 
-        # Node0's balance should be starting balance, plus 50WCN for another
+        # Node0's balance should be starting balance, plus 50BTC for another
         # matured block, minus tx1 and tx2 amounts, and minus transaction fees:
         expected = starting_balance + fund_foo_tx["fee"] + fund_bar_tx["fee"]
         if self.options.mine_block: expected += 50
@@ -137,7 +137,7 @@ class TxnMallTest(WidecoinTestFramework):
         assert_equal(tx1_clone["confirmations"], 2)
         assert_equal(tx2["confirmations"], 1)
 
-        # Check node0's total balance; should be same as before the clone, + 100 WCN for 2 matured,
+        # Check node0's total balance; should be same as before the clone, + 100 BTC for 2 matured,
         # less possible orphaned matured subsidy
         expected += 100
         if (self.options.mine_block): 

@@ -1,9 +1,9 @@
-// Copyright (c) 2012-2017 The Widecoin Core developers
+// Copyright (c) 2012-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WIDECOIN_BLOOM_H
-#define WIDECOIN_BLOOM_H
+#ifndef BITCOIN_BLOOM_H
+#define BITCOIN_BLOOM_H
 
 #include <serialize.h>
 
@@ -140,4 +140,4 @@ private:
     int nHashFuncs;
 };
 
-#endif // WIDECOIN_BLOOM_H
+#endif // BITCOIN_BLOOM_H

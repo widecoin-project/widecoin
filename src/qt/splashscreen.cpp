@@ -1,9 +1,10 @@
-// Copyright (c) 2011-2017 The Widecoin Core developers
+// Copyright (c) 2011-2017 The Bitcoin Core developers
+// Copyright (c) 2018-2020 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include <config/widecoin-config.h>
+#include <config/bitcoin-config.h>
 #endif
 
 #include <qt/splashscreen.h>
@@ -26,12 +27,14 @@
 #include <QPainter>
 #include <QRadialGradient>
 
+// FIXME.WCN
+// QT SplashScreen Widecoin
 SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) :
     QWidget(0, f), curAlignment(0)
 {
     // set reference point, paddings
-    int paddingRight            = 50;
-    int paddingTop              = 50;
+    int paddingRight            = 50*3.0+1;
+    int paddingTop              = 50*1.0;
     int titleVersionVSpace      = 17;
     int titleCopyrightVSpace    = 40;
 
@@ -44,7 +47,26 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     // define text to place
     QString titleText       = tr(PACKAGE_NAME);
     QString versionText     = QString("Version %1").arg(QString::fromStdString(FormatFullVersion()));
+
+    // BEGIN - Adding Additional CopyrightHolders (2/2)
+    // Duplicated <init.cpp> but little bit different
+    const std::string Copyright_1 = strprintf(_("\xc2\xA9 %u-%u "), 2009, 2010) + "Satoshi Nakamoto";
+    const std::string Copyright_2 = strprintf(_("\xc2\xA9 %u-%u "), 2009, 2018) + "The Bitcoin Core developers";
+    const std::string Copyright_3 = strprintf(_("\xc2\xA9 %u-%u "), 2021, 2022) + "The Widecoin Core developers";
+    // END - Adding Additional CopyrightHolders (2/2)
+
+    // BEGIN - Placing Additional CopyrightHolders
+    /*QString copyrightText   = QString::fromUtf8(
+        (
+            Copyright_1 + "\n" +
+            Copyright_2 + "\n" +
+            Copyright_3 + "\n" +
+            CopyrightHolders(strprintf("\xc2\xA9 %u-%u ", 2020, COPYRIGHT_YEAR))
+        ).c_str()
+    );*/
     QString copyrightText   = QString::fromUtf8(CopyrightHolders(strprintf("\xc2\xA9 %u-%u ", 2020, COPYRIGHT_YEAR)).c_str());
+    // END - Placing Additional CopyrightHolders
+
     QString titleAddText    = networkStyle->getTitleAddText();
 
     QString font            = QApplication::font().toString();
@@ -68,8 +90,9 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     QRect rGradient(QPoint(0,0), splashSize);
     pixPaint.fillRect(rGradient, gradient);
 
-    // draw the widecoin icon, expected size of PNG: 1024x1024
-    QRect rectIcon(QPoint(-150,-122), QSize(430,430));
+    // draw the bitcoin icon, expected size of PNG: 1024x1024
+    // QRect rectIcon(QPoint(-150,-122), QSize(430,430));
+    QRect rectIcon(QPoint(120,40), QSize(480,480));
 
     const QSize requiredSize(1024,1024);
     QPixmap icon(networkStyle->getAppIcon().pixmap(requiredSize));
@@ -80,8 +103,8 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
     pixPaint.setFont(QFont(font, 33*fontFactor));
     QFontMetrics fm = pixPaint.fontMetrics();
     int titleTextWidth = fm.width(titleText);
-    if (titleTextWidth > 176) {
-        fontFactor = fontFactor * 176 / titleTextWidth;
+    if (titleTextWidth > 176*1.75) {
+        fontFactor = fontFactor * 176*1.75 / titleTextWidth;
     }
 
     pixPaint.setFont(QFont(font, 33*fontFactor));
@@ -102,7 +125,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle *networkStyle) 
 
     // draw copyright stuff
     {
-        pixPaint.setFont(QFont(font, 10*fontFactor));
+        pixPaint.setFont(QFont(font, 13*fontFactor));
         const int x = pixmap.width()/devicePixelRatio-titleTextWidth-paddingRight;
         const int y = paddingTop+titleCopyrightVSpace;
         QRect copyrightRect(x, y, pixmap.width() - x - paddingRight, pixmap.height() - y);

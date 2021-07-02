@@ -1,12 +1,12 @@
-// Copyright (c) 2014-2017 The Widecoin Core developers
+// Copyright (c) 2014-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WIDECOIN_COMPAT_BYTESWAP_H
-#define WIDECOIN_COMPAT_BYTESWAP_H
+#ifndef BITCOIN_COMPAT_BYTESWAP_H
+#define BITCOIN_COMPAT_BYTESWAP_H
 
 #if defined(HAVE_CONFIG_H)
-#include <config/widecoin-config.h>
+#include <config/bitcoin-config.h>
 #endif
 
 #include <stdint.h>
@@ -63,4 +63,4 @@ inline uint64_t bswap_64(uint64_t x)
 
 #endif // defined(__APPLE__)
 
-#endif // WIDECOIN_COMPAT_BYTESWAP_H
+#endif // BITCOIN_COMPAT_BYTESWAP_H

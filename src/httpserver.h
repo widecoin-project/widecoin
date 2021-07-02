@@ -1,16 +1,16 @@
-// Copyright (c) 2015-2017 The Widecoin Core developers
+// Copyright (c) 2015-2017 The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef WIDECOIN_HTTPSERVER_H
-#define WIDECOIN_HTTPSERVER_H
+#ifndef BITCOIN_HTTPSERVER_H
+#define BITCOIN_HTTPSERVER_H
 
 #include <string>
 #include <stdint.h>
 #include <functional>
 
 static const int DEFAULT_HTTP_THREADS=4;
-static const int DEFAULT_HTTP_WORKQUEUE=16;
+static const int DEFAULT_HTTP_WORKQUEUE=128;
 static const int DEFAULT_HTTP_SERVER_TIMEOUT=30;
 
 struct evhttp_request;
@@ -150,4 +150,4 @@ private:
 
 std::string urlDecode(const std::string &urlEncoded);
 
-#endif // WIDECOIN_HTTPSERVER_H
+#endif // BITCOIN_HTTPSERVER_H

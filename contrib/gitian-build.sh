@@ -1,4 +1,5 @@
-# Copyright (c) 2016 The Widecoin Core developers
+# Copyright (c) 2016 The Bitcoin Core developers
+# Copyright (c) 2018-2020 The Widecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -16,12 +17,15 @@ osx=true
 SIGNER=
 VERSION=
 commit=false
-url=https://github.com/widecoin/widecoin
+
+# GITHUB repo select
+url=https://github.com/widecoin-project/widecoin
+
 proc=2
 mem=2000
 lxc=true
 osslTarUrl=http://downloads.sourceforge.net/project/osslsigncode/osslsigncode/osslsigncode-1.7.1.tar.gz
-osslPatchUrl=https://widecoincore.org/cfields/osslsigncode-Backports-to-1.7.1.patch
+osslPatchUrl=https://bitcoincore.org/cfields/osslsigncode-Backports-to-1.7.1.patch
 scriptName=$(basename -- "$0")
 signProg="gpg --detach-sign"
 commitFiles=true
@@ -38,7 +42,7 @@ version		Version number, commit, or branch to build. If building a commit or bra
 
 Options:
 -c|--commit	Indicate that the version argument is for a commit or branch
--u|--url	Specify the URL of the repository. Default is https://github.com/widecoin/widecoin
+-u|--url	Specify the URL of the repository. Default is https://github.com/widecoin-project/widecoin
 -v|--verify 	Verify the Gitian build
 -b|--build	Do a Gitian build
 -s|--sign	Make signed binaries for Windows and Mac OSX
@@ -229,8 +233,8 @@ echo ${COMMIT}
 if [[ $setup = true ]]
 then
     sudo apt-get install ruby apache2 git apt-cacher-ng python-vm-builder qemu-kvm qemu-utils
-    git clone https://github.com/widecoin-core/gitian.sigs.git
-    git clone https://github.com/widecoin-core/widecoin-detached-sigs.git
+    git clone https://github.com/widecoin-project/gitian.sigs.git
+    git clone https://github.com/widecoin-project/widecoin-detached-sigs.git
     git clone https://github.com/devrandom/gitian-builder.git
     pushd ./gitian-builder
     if [[ -n "$USE_LXC" ]]
@@ -261,8 +265,16 @@ then
 	echo ""
 	pushd ./gitian-builder	
 	mkdir -p inputs
-	wget -N -P inputs $osslPatchUrl
-	wget -N -P inputs $osslTarUrl
+
+  # FIXME.WCN
+  # wget is too slow so files pre-fixed - osslsigncode and XcodeSDK
+  # wget -N -P inputs $osslPatchUrl
+  echo 'a8c4e9cafba922f89de0df1f2152e7be286aba73f78505169bc351a7938dd911 inputs/osslsigncode-Backports-to-1.7.1.patch' | sha256sum -c
+  # wget -N -P inputs $osslTarUrl
+  echo 'f9a8cdb38b9c309326764ebc937cba1523a3a751a7ab05df3ecc99d18ae466c9 inputs/osslsigncode-1.7.1.tar.gz' | sha256sum -c
+  # Xcode SDK for macOS build
+  echo 'fc65dd34a3665a549cf2dc005c1d13fcead9ba17cadac6dfd0ebc46435729898 inputs/MacOSX10.11.sdk.tar.gz' | sha256sum -c
+
 	make -C ../widecoin/depends download SOURCES_PATH=`pwd`/cache/common
 
 	# Linux

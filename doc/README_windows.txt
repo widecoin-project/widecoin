@@ -18,6 +18,6 @@ However, it downloads and stores the entire history of Widecoin transactions;
 depending on the speed of your computer and network connection, the synchronization
 process can take anywhere from a few hours to a day or more.
 
-See the widecoin wiki at:
-  https://en.widecoin.it/wiki/Main_Page
+See the Widecoin homepage at:
+  https://widecoin.org
 for more help and information.

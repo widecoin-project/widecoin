@@ -1,7 +1,0 @@
-[main]
-host = https://www.transifex.com
-
-[widecoin.qt-translation-016x]
-file_filter = src/qt/locale/widecoin_<lang>.ts
-source_file = src/qt/locale/widecoin_en.ts
-source_lang = en
