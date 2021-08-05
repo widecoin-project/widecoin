@@ -78,7 +78,7 @@ def download_binary(tag, args) -> int:
             match.group(1), match.group(2))
     tarball = 'widecoin-{tag}-{platform}.tar.gz'.format(
         tag=tag[1:], platform=args.platform)
-    tarballUrl = 'https://widecoincore.org/{bin_path}/{tarball}'.format(
+    tarballUrl = 'https://widecoin.org/{bin_path}/{tarball}'.format(
         bin_path=bin_path, tarball=tarball)
 
     print('Fetching: {tarballUrl}'.format(tarballUrl=tarballUrl))
@@ -120,7 +120,7 @@ def download_binary(tag, args) -> int:
 
 
 def build_release(tag, args) -> int:
-    githubUrl = "https://github.com/widecoin/widecoin"
+    githubUrl = "https://github.com/widecoin-project/widecoin"
     if args.remove_dir:
         if Path(tag).is_dir():
             shutil.rmtree(tag)

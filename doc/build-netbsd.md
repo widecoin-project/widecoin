@@ -22,7 +22,7 @@ libtool
 pkg-config
 python37
 
-git clone https://github.com/widecoin/widecoin.git
+git clone https://github.com/widecoin-project/widecoin.git
 ```
 
 See [dependencies.md](dependencies.md) for a complete overview.

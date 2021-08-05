@@ -24,7 +24,7 @@ TMPFILE="hashes.tmp"
 
 SIGNATUREFILENAME="SHA256SUMS.asc"
 RCSUBDIR="test"
-HOST1="https://widecoincore.org"
+HOST1="https://widecoin.org"
 HOST2="https://widecoin.org"
 BASEDIR="/bin/"
 VERSIONPREFIX="widecoin-core-"
