@@ -5,7 +5,7 @@
 #ifndef WIDECOIN_KERNEL_MEMPOOL_PERSIST_H
 #define WIDECOIN_KERNEL_MEMPOOL_PERSIST_H
 
-#include <fs.h>
+#include <util/fs.h>
 
 class Chainstate;
 class CTxMemPool;

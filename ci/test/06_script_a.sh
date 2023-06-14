@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2018-2021 The Widecoin Core developers
+# Copyright (c) 2018-2022 The Widecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 export LC_ALL=C.UTF-8
 
-WIDECOIN_CONFIG_ALL="--enable-suppress-external-warnings --disable-dependency-tracking --prefix=$DEPENDS_DIR/$HOST"
+WIDECOIN_CONFIG_ALL="--enable-suppress-external-warnings --disable-dependency-tracking"
+if [ -z "$NO_DEPENDS" ]; then
+  WIDECOIN_CONFIG_ALL="${WIDECOIN_CONFIG_ALL} CONFIG_SITE=$DEPENDS_DIR/$HOST/share/config.site"
+fi
 if [ -z "$NO_WERROR" ]; then
   WIDECOIN_CONFIG_ALL="${WIDECOIN_CONFIG_ALL} --enable-werror"
 fi
@@ -23,7 +26,7 @@ if [ -n "$ANDROID_TOOLS_URL" ]; then
   exit 0
 fi
 
-WIDECOIN_CONFIG_ALL="${WIDECOIN_CONFIG_ALL} --enable-external-signer --bindir=$BASE_OUTDIR/bin --libdir=$BASE_OUTDIR/lib"
+WIDECOIN_CONFIG_ALL="${WIDECOIN_CONFIG_ALL} --enable-external-signer --prefix=$BASE_OUTDIR"
 
 if [ -n "$CONFIG_SHELL" ]; then
   CI_EXEC "$CONFIG_SHELL" -c "./autogen.sh"

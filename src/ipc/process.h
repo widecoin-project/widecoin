@@ -5,6 +5,8 @@
 #ifndef WIDECOIN_IPC_PROCESS_H
 #define WIDECOIN_IPC_PROCESS_H
 
+#include <util/fs.h>
+
 #include <memory>
 #include <string>
 

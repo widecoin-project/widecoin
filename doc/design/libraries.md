@@ -35,7 +35,7 @@
 
 ```mermaid
 
-%%{ init : { "flowchart" : { "curve" : "linear" }}}%%
+%%{ init : { "flowchart" : { "curve" : "basis" }}}%%
 
 graph TD;
 
@@ -51,18 +51,18 @@ widecoin-qt[widecoin-qt]-->libwidecoin_wallet;
 widecoin-wallet[widecoin-wallet]-->libwidecoin_wallet;
 widecoin-wallet[widecoin-wallet]-->libwidecoin_wallet_tool;
 
-libwidecoin_cli-->libwidecoin_common;
 libwidecoin_cli-->libwidecoin_util;
+libwidecoin_cli-->libwidecoin_common;
 
-libwidecoin_common-->libwidecoin_util;
 libwidecoin_common-->libwidecoin_consensus;
+libwidecoin_common-->libwidecoin_util;
 
 libwidecoin_kernel-->libwidecoin_consensus;
 libwidecoin_kernel-->libwidecoin_util;
 
-libwidecoin_node-->libwidecoin_common;
 libwidecoin_node-->libwidecoin_consensus;
 libwidecoin_node-->libwidecoin_kernel;
+libwidecoin_node-->libwidecoin_common;
 libwidecoin_node-->libwidecoin_util;
 
 libwidecoinqt-->libwidecoin_common;
@@ -71,8 +71,8 @@ libwidecoinqt-->libwidecoin_util;
 libwidecoin_wallet-->libwidecoin_common;
 libwidecoin_wallet-->libwidecoin_util;
 
-libwidecoin_wallet_tool-->libwidecoin_util;
 libwidecoin_wallet_tool-->libwidecoin_wallet;
+libwidecoin_wallet_tool-->libwidecoin_util;
 
 classDef bold stroke-width:2px, font-weight:bold, font-size: smaller;
 class widecoin-qt,widecoind,widecoin-cli,widecoin-wallet bold
@@ -83,7 +83,7 @@ class widecoin-qt,widecoind,widecoin-cli,widecoin-wallet bold
 
 </td></tr></table>
 
-- The graph shows what _linker symbols_ (functions and variables) from each library other libraries can call and reference directly, but it is not a call graph. For example, there is no arrow connecting *libwidecoin_wallet* and *libwidecoin_node* libraries, because these libraries are intended to be modular and not depend on each other's internal implementation details. But wallet code still is still able to call node code indirectly through the `interfaces::Chain` abstract class in [`interfaces/chain.h`](../../src/interfaces/chain.h) and node code calls wallet code through the `interfaces::ChainClient` and `interfaces::Chain::Notifications` abstract classes in the same file. In general, defining abstract classes in [`src/interfaces/`](../../src/interfaces/) can be a convenient way of avoiding unwanted direct dependencies or circular dependencies between libraries.
+- The graph shows what _linker symbols_ (functions and variables) from each library other libraries can call and reference directly, but it is not a call graph. For example, there is no arrow connecting *libwidecoin_wallet* and *libwidecoin_node* libraries, because these libraries are intended to be modular and not depend on each other's internal implementation details. But wallet code is still able to call node code indirectly through the `interfaces::Chain` abstract class in [`interfaces/chain.h`](../../src/interfaces/chain.h) and node code calls wallet code through the `interfaces::ChainClient` and `interfaces::Chain::Notifications` abstract classes in the same file. In general, defining abstract classes in [`src/interfaces/`](../../src/interfaces/) can be a convenient way of avoiding unwanted direct dependencies or circular dependencies between libraries.
 
 - *libwidecoin_consensus* should be a standalone dependency that any library can depend on, and it should not depend on any other libraries itself.
 

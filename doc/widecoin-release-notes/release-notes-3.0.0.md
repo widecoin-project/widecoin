@@ -1,4 +1,4 @@
-2.0 Release Notes
+3.0 Release Notes
 ==================
 
 Widecoin Core version 3.0 is now available from:
