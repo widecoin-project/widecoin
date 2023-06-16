@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2021 The Widecoin Core developers
+// Copyright (c) 2011-2022 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -217,9 +217,8 @@ Q_SIGNALS:
 
 #include <qt/widecoinamountfield.moc>
 
-WidecoinAmountField::WidecoinAmountField(QWidget *parent) :
-    QWidget(parent),
-    amount(nullptr)
+WidecoinAmountField::WidecoinAmountField(QWidget* parent)
+    : QWidget(parent)
 {
     amount = new AmountSpinBox(this);
     amount->setLocale(QLocale::c());

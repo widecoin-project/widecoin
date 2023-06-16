@@ -36,10 +36,6 @@
         <source>%1 didn't yet exit safely…</source>
         <translation type="unfinished">%1Ingakatholakali ngokuphepha okwamanje.</translation>
     </message>
-    <message>
-        <source>Internal</source>
-        <translation type="unfinished">Okwangaphakathi</translation>
-    </message>
     <message numerus="yes">
         <source>%n second(s)</source>
         <translation type="unfinished">
@@ -81,13 +77,6 @@
             <numerusform />
             <numerusform />
         </translation>
-    </message>
-    </context>
-<context>
-    <name>widecoin-core</name>
-    <message>
-        <source>Error: Missing checksum</source>
-        <translation type="unfinished">Iphutha: iChecksum engekho</translation>
     </message>
     </context>
 <context>
@@ -172,15 +161,15 @@
     <message numerus="yes">
         <source>(of %n GB needed)</source>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>(of %n GB needed)</numerusform>
+            <numerusform>(of %n GB needed)</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <source>(%n GB needed for full chain)</source>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>(%n GB needed for full chain)</numerusform>
+            <numerusform>(%n GB needed for full chain)</numerusform>
         </translation>
     </message>
     <message numerus="yes">
@@ -230,6 +219,13 @@
         <source>Comma separated file</source>
         <extracomment>Expanded name of the CSV file format. See: https://en.wikipedia.org/wiki/Comma-separated_values.</extracomment>
         <translation type="unfinished">Ifayela elehlukaniswe ngo khefana.</translation>
+    </message>
+    </context>
+<context>
+    <name>widecoin-core</name>
+    <message>
+        <source>Error: Missing checksum</source>
+        <translation type="unfinished">Iphutha: iChecksum engekho</translation>
     </message>
     </context>
 </TS>

@@ -5,7 +5,7 @@
 #ifndef WIDECOIN_UTIL_GETUNIQUEPATH_H
 #define WIDECOIN_UTIL_GETUNIQUEPATH_H
 
-#include <fs.h>
+#include <util/fs.h>
 
 /**
  * Helper function for getting a unique path

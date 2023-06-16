@@ -81,7 +81,11 @@
         <source>Export Address List</source>
         <translation type="unfinished">Экспорт хийх хаягуудын жагсаалт</translation>
     </message>
-    </context>
+    <message>
+        <source>Exporting Failed</source>
+        <translation type="unfinished">Экспорт амжилтгүй боллоо</translation>
+    </message>
+</context>
 <context>
     <name>AddressTableModel</name>
     <message>
@@ -161,6 +165,13 @@
     </message>
     </context>
 <context>
+    <name>WidecoinApplication</name>
+    <message>
+        <source>Internal error</source>
+        <translation type="unfinished">Дотоод алдаа</translation>
+    </message>
+    </context>
+<context>
     <name>QObject</name>
     <message>
         <source>Error: %1</source>
@@ -222,17 +233,6 @@
     </message>
     </context>
 <context>
-    <name>widecoin-core</name>
-    <message>
-        <source>Done loading</source>
-        <translation type="unfinished">Ачааллаж дууслаа</translation>
-    </message>
-    <message>
-        <source>Insufficient funds</source>
-        <translation type="unfinished">Таны дансны үлдэгдэл хүрэлцэхгүй байна</translation>
-    </message>
-    </context>
-<context>
     <name>WidecoinGUI</name>
     <message>
         <source>&amp;Transactions</source>
@@ -259,8 +259,17 @@
         <translation type="unfinished">Клиентийн тухай мэдээллийг харуул</translation>
     </message>
     <message>
+        <source>Create a new wallet</source>
+        <translation type="unfinished">Шинэ түрийвч үүсгэх</translation>
+    </message>
+    <message>
         <source>Wallet:</source>
         <translation type="unfinished">Хэтэвч:</translation>
+    </message>
+    <message>
+        <source>Network activity disabled.</source>
+        <extracomment>A substring of the tooltip.</extracomment>
+        <translation type="unfinished">Сүлжээний үйл ажиллагааг идэвхгүй болгосон.</translation>
     </message>
     <message>
         <source>Change the passphrase used for wallet encryption</source>
@@ -335,6 +344,46 @@
         <translation type="unfinished">Алдаа: %1</translation>
     </message>
     <message>
+        <source>Warning: %1</source>
+        <translation type="unfinished">Анхааруулга:%1</translation>
+    </message>
+    <message>
+        <source>Date: %1
+</source>
+        <translation type="unfinished">Огноо:%1
+</translation>
+    </message>
+    <message>
+        <source>Amount: %1
+</source>
+        <translation type="unfinished">Дүн: %1
+</translation>
+    </message>
+    <message>
+        <source>Wallet: %1
+</source>
+        <translation type="unfinished">Түрийвч: %1
+</translation>
+    </message>
+    <message>
+        <source>Type: %1
+</source>
+        <translation type="unfinished">Төрөл: %1
+</translation>
+    </message>
+    <message>
+        <source>Label: %1
+</source>
+        <translation type="unfinished">Шошго: %1
+</translation>
+    </message>
+    <message>
+        <source>Address: %1
+</source>
+        <translation type="unfinished">Хаяг: %1
+</translation>
+    </message>
+    <message>
         <source>Sent transaction</source>
         <translation type="unfinished">Гадагшаа гүйлгээ</translation>
     </message>
@@ -350,7 +399,11 @@
         <source>Wallet is &lt;b&gt;encrypted&lt;/b&gt; and currently &lt;b&gt;locked&lt;/b&gt;</source>
         <translation type="unfinished">Түрүйвч &lt;b&gt;цоожтой&lt;/b&gt; ба одоогоор цоож &lt;b&gt;хаалттай&lt;/b&gt; байна</translation>
     </message>
-    </context>
+    <message>
+        <source>Original message:</source>
+        <translation type="unfinished">Эх зурвас:</translation>
+    </message>
+</context>
 <context>
     <name>CoinControlDialog</name>
     <message>
@@ -1010,6 +1063,10 @@
         <translation type="unfinished">Тодорхойлолт</translation>
     </message>
     <message>
+        <source>Exporting Failed</source>
+        <translation type="unfinished">Экспорт амжилтгүй боллоо</translation>
+    </message>
+    <message>
         <source>The transaction history was successfully saved to %1.</source>
         <translation type="unfinished">Гүйлгээнүй түүхийг %1-д амжилттай хадгаллаа.</translation>
     </message>
@@ -1020,6 +1077,10 @@
 </context>
 <context>
     <name>WalletFrame</name>
+    <message>
+        <source>Create a new wallet</source>
+        <translation type="unfinished">Шинэ түрийвч үүсгэх</translation>
+    </message>
     <message>
         <source>Error</source>
         <translation type="unfinished">Алдаа</translation>
@@ -1041,6 +1102,17 @@
     <message>
         <source>Export the data in the current tab to a file</source>
         <translation type="unfinished">Сонгогдсон таб дээрхи дата-г экспортлох</translation>
+    </message>
+    </context>
+<context>
+    <name>widecoin-core</name>
+    <message>
+        <source>Done loading</source>
+        <translation type="unfinished">Ачааллаж дууслаа</translation>
+    </message>
+    <message>
+        <source>Insufficient funds</source>
+        <translation type="unfinished">Таны дансны үлдэгдэл хүрэлцэхгүй байна</translation>
     </message>
     </context>
 </TS>

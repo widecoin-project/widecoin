@@ -1,7 +1,7 @@
-4.0.0 Release Notes
-====================
+5.0 Release Notes
+==================
 
-Widecoin Core version 4.0 is now available from:
+Widecoin Core version 5.0 is now available from:
 
   <https://widecoin.org>
 
@@ -11,6 +11,7 @@ improvements, as well as updated translations.
 Please report bugs using the issue tracker at GitHub:
 
   <https://github.com/widecoin-project/widecoin/issues>
+
 
 How to Upgrade
 ==============
@@ -33,222 +34,179 @@ Core should also work on most other Unix-like systems but is not as
 frequently tested on them.  It is not recommended to use Widecoin Core on
 unsupported systems.
 
-Notice of new option for transaction replacement policies
-=========================================================
-
-This version of Widecoin Core adds a new `mempoolfullrbf` configuration
-option which allows users to change the policy their individual node
-will use for relaying and mining unconfirmed transactions.  The option
-defaults to the same policy that was used in previous releases and no
-changes to node policy will occur if everyone uses the default.
-
-Some Widecoin services today expect that the first version of an
-unconfirmed transaction that they see will be the version of the
-transaction that ultimately gets confirmed---a transaction acceptance
-policy sometimes called "first-seen".
-
-The Widecoin Protocol does not, and cannot, provide any assurance that
-the first version of an unconfirmed transaction seen by a particular
-node will be the version that gets confirmed.  If there are multiple
-versions of the same unconfirmed transaction available, only the miner
-who includes one of those transactions in a block gets to decide which
-version of the transaction gets confirmed.
-
-Despite this lack of assurance, multiple merchants and services today
-still make this assumption.
-
-There are several benefits to users from removing this *first-seen*
-simplification.  One key benefit, the ability for the sender of a
-transaction to replace it with an alternative version paying higher
-fees, was realized in [Widecoin Core 0.12.0][] (February 2016) with the
-introduction of [BIP125][] opt-in Replace By Fee (RBF).
-
-Since then, there has been discussion about completely removing the
-first-seen simplification and allowing users to replace any of their
-older unconfirmed transactions with newer transactions, a feature called
-*full-RBF*.  This release includes a `mempoolfullrbf` configuration
-option that allows enabling full-RBF, although it defaults to off
-(allowing only opt-in RBF).
-
-Several alternative node implementations have already enabled full-RBF by
-default for years, and several contributors to Widecoin Core are
-advocating for enabling full-RBF by default in a future version of
-Widecoin Core.
-
-As more nodes that participate in relay and mining begin enabling
-full-RBF, replacement of unconfirmed transactions by ones offering higher
-fees may rapidly become more reliable.
-
-Contributors to this project strongly recommend that merchants and services
-not accept unconfirmed transactions as final, and if they insist on doing so,
-to take the appropriate steps to ensure they have some recourse or plan for
-when their assumptions do not hold.
-
-[Widecoin Core 0.12.0]: https://widecoincore.org/en/releases/0.12.0/#opt-in-replace-by-fee-transactions
-[bip125]: https://github.com/widecoin/bips/blob/master/bip-0125.mediawiki
-
 Notable changes
 ===============
 
 P2P and network changes
 -----------------------
 
-- To address a potential denial-of-service, the logic to download headers from peers
-  has been reworked.  This is particularly relevant for nodes starting up for the
-  first time (or for nodes which are starting up after being offline for a long time).
-
-  Whenever headers are received from a peer that have a total chainwork that is either
-  less than the node's `-minimumchainwork` value or is sufficiently below the work at
-  the node's tip, a "presync" phase will begin, in which the node will download the
-  peer's headers and verify the cumulative work on the peer's chain, prior to storing
-  those headers permanently. Once that cumulative work is verified to be sufficiently high,
-  the headers will be redownloaded from that peer and fully validated and stored.
-
-  This may result in initial headers sync taking longer for new nodes starting up for
-  the first time, both because the headers will be downloaded twice, and because the effect
-  of a peer disconnecting during the presync phase (or while the node's best headers chain has less
-  than `-minimumchainwork`), will result in the node needing to use the headers presync mechanism
-  with the next peer as well (downloading the headers twice, again). (#25717)
-
-- With I2P connections, a new, transient address is used for each outbound
-  connection if `-i2pacceptincoming=0`. (#25355)
-
-Updated RPCs
-------------
-
-- The `-deprecatedrpc=softforks` configuration option has been removed.  The
-  RPC `getblockchaininfo` no longer returns the `softforks` field, which was
-  previously deprecated in 23.0. (#23508) Information on soft fork status is
-  now only available via the `getdeploymentinfo` RPC.
-
-- The `deprecatedrpc=exclude_coinbase` configuration option has been removed.
-  The `receivedby` RPCs (`listreceivedbyaddress`, `listreceivedbylabel`,
-  `getreceivedbyaddress` and `getreceivedbylabel`) now always return results
-  accounting for received coins from coinbase outputs, without an option to
-  change that behaviour. Excluding coinbases was previously deprecated in 23.0.
-  (#25171)
-
-- The `deprecatedrpc=fees` configuration option has been removed. The top-level
-  fee fields `fee`, `modifiedfee`, `ancestorfees` and `descendantfees` are no
-  longer returned by RPCs `getmempoolentry`, `getrawmempool(verbose=true)`,
-  `getmempoolancestors(verbose=true)` and `getmempooldescendants(verbose=true)`.
-  The same fee fields can be accessed through the `fees` object in the result.
-  The top-level fee fields were previously deprecated in 23.0. (#25204)
-
-- The `getpeerinfo` RPC has been updated with a new `presynced_headers` field,
-  indicating the progress on the presync phase mentioned in the
-  "P2P and network changes" section above.
-
-Changes to wallet related RPCs can be found in the Wallet section below.
+- Transactions of non-witness size 65 and above are now allowed by mempool
+  and relay policy. This is to better reflect the actual afforded protections
+  against CVE-2017-12842 and open up additional use-cases of smaller transaction sizes. (#26265)
 
 New RPCs
 --------
 
-- The `sendall` RPC spends specific UTXOs to one or more recipients
-  without creating change. By default, the `sendall` RPC will spend
-  every UTXO in the wallet. `sendall` is useful to empty wallets or to
-  create a changeless payment from select UTXOs. When creating a payment
-  from a specific amount for which the recipient incurs the transaction
-  fee, continue to use the `subtractfeefromamount` option via the
-  `send`, `sendtoaddress`, or `sendmany` RPCs. (#24118)
+- The scanblocks RPC returns the relevant blockhashes from a set of descriptors by
+  scanning all blockfilters in the given range. It can be used in combination with
+  the getblockheader and rescanblockchain RPCs to achieve fast wallet rescans. Note
+  that this functionality can only be used if a compact block filter index
+  (-blockfilterindex=1) has been constructed by the node. (#23549)
 
-- A new `gettxspendingprevout` RPC has been added, which scans the mempool to find
-  transactions spending any of the given outpoints. (#24408)
+Updated RPCs
+------------
 
-- The `simulaterawtransaction` RPC iterates over the inputs and outputs of the given
-  transactions, and tallies up the balance change for the given wallet. This can be
-  useful e.g. when verifying that a coin join like transaction doesn't contain unexpected
-  inputs that the wallet will then sign for unintentionally. (#22751)
+- All JSON-RPC methods accept a new [named
+  parameter](JSON-RPC-interface.md#parameter-passing) called `args` that can
+  contain positional parameter values. This is a convenience to allow some
+  parameter values to be passed by name without having to name every value. The
+  python test framework and `widecoin-cli` tool both take advantage of this, so
+  for example:
 
-Updated REST APIs
------------------
+```sh
+widecoin-cli -named createwallet wallet_name=mywallet load_on_startup=1
+```
 
-- The `/headers/` and `/blockfilterheaders/` endpoints have been updated to use
-  a query parameter instead of path parameter to specify the result count. The
-  count parameter is now optional, and defaults to 5 for both endpoints. The old
-  endpoints are still functional, and have no documented behaviour change.
+Can now be shortened to:
 
-  For `/headers`, use
-  `GET /rest/headers/<BLOCK-HASH>.<bin|hex|json>?count=<COUNT=5>`
-  instead of
-  `GET /rest/headers/<COUNT>/<BLOCK-HASH>.<bin|hex|json>` (deprecated)
+```sh
+widecoin-cli -named createwallet mywallet load_on_startup=1
+```
 
-  For `/blockfilterheaders/`, use
-  `GET /rest/blockfilterheaders/<FILTERTYPE>/<BLOCK-HASH>.<bin|hex|json>?count=<COUNT=5>`
-  instead of
-  `GET /rest/blockfilterheaders/<FILTERTYPE>/<COUNT>/<BLOCK-HASH>.<bin|hex|json>` (deprecated)
+- The `verifychain` RPC will now return `false` if the checks didn't fail,
+  but couldn't be completed at the desired depth and level. This could be due
+  to missing data while pruning, due to an insufficient dbcache or due to
+  the node being shutdown before the call could finish. (#25574)
 
-  (#24098)
+- `sendrawtransaction` has a new, optional argument, `maxburnamount` with a default value of `0`.
+  Any transaction containing an unspendable output with a value greater than `maxburnamount` will
+  not be submitted. At present, the outputs deemed unspendable are those with scripts that begin
+  with an `OP_RETURN` code (known as 'datacarriers'), scripts that exceed the maximum script size,
+  and scripts that contain invalid opcodes.
+
+- The `testmempoolaccept` RPC now returns 2 additional results within the "fees" result:
+  "effective-feerate" is the feerate including fees and sizes of transactions validated together if
+  package validation was used, and also includes any modified fees from prioritisetransaction. The
+  "effective-includes" result lists the wtxids of transactions whose modified fees and sizes were used
+  in the effective-feerate (#26646).
+
+- `decodescript` may now infer a Miniscript descriptor under P2WSH context if it is not lacking
+  information. (#27037)
+
+- `finalizepsbt` is now able to finalize a transaction with inputs spending Miniscript-compatible
+  P2WSH scripts. (#24149)
+
+Changes to wallet related RPCs can be found in the Wallet section below.
 
 Build System
 ------------
 
-- Guix builds are now reproducible across architectures (x86_64 & aarch64). (#21194)
+- The `--enable-upnp-default` and `--enable-natpmp-default` options
+  have been removed. If you want to use port mapping, you can
+  configure it using a .conf file, or by passing the relevant
+  options at runtime. (#26896)
+
+Updated settings
+----------------
+
+- If the `-checkblocks` or `-checklevel` options are explicitly provided by the
+user, but the verification checks cannot be completed due to an insufficient
+dbcache, Widecoin Core will now return an error at startup. (#25574)
+
+- Ports specified in `-port` and `-rpcport` options are now validated at startup.
+  Values that previously worked and were considered valid can now result in errors. (#22087)
+
+- Setting `-blocksonly` will now reduce the maximum mempool memory
+  to 5MB (users may still use `-maxmempool` to override). Previously,
+  the default 300MB would be used, leading to unexpected memory usage
+  for users running with `-blocksonly` expecting it to eliminate
+  mempool memory usage.
+
+  As unused mempool memory is shared with dbcache, this also reduces
+  the dbcache size for users running with `-blocksonly`, potentially
+  impacting performance.
+- Setting `-maxconnections=0` will now disable `-dnsseed`
+  and `-listen` (users may still set them to override).
+
+Changes to GUI or wallet related settings can be found in the GUI or Wallet section below.
 
 New settings
 ------------
 
-- A new `mempoolfullrbf` option has been added, which enables the mempool to
-  accept transaction replacement without enforcing BIP125 replaceability
-  signaling. (#25353)
+- The `shutdownnotify` option is used to specify a command to execute synchronously
+before Widecoin Core has begun its shutdown sequence. (#23395)
+
 
 Wallet
 ------
 
-- The `-walletrbf` startup option will now default to `true`. The
-  wallet will now default to opt-in RBF on transactions that it creates. (#25610)
+- The `minconf` option, which allows a user to specify the minimum number
+of confirmations a UTXO being spent has, and the `maxconf` option,
+which allows specifying the maximum number of confirmations, have been
+added to the following RPCs in #25375:
+  - `fundrawtransaction`
+  - `send`
+  - `walletcreatefundedpsbt`
+  - `sendall`
 
-- The `replaceable` option for the `createrawtransaction` and
-  `createpsbt` RPCs will now default to `true`. Transactions created
-  with these RPCs will default to having opt-in RBF enabled. (#25610)
+- Added a new `next_index` field in the response in `listdescriptors` to
+  have the same format as `importdescriptors` (#26194)
 
-- The `wsh()` output descriptor was extended with Miniscript support. You can import Miniscript
-  descriptors for P2WSH in a watchonly wallet to track coins, but you can't spend from them using
-  the Widecoin Core wallet yet.
-  You can find more about Miniscript on the [reference website](https://widecoin.sipa.be/miniscript/). (#24148)
+- RPC `listunspent` now has a new argument `include_immature_coinbase`
+  to include coinbase UTXOs that don't meet the minimum spendability
+  depth requirement (which before were silently skipped). (#25730)
 
-- The `tr()` output descriptor now supports multisig scripts through the `multi_a()` and
-  `sortedmulti_a()` functions. (#24043)
+- Rescans for descriptor wallets are now significantly faster if compact
+  block filters (BIP158) are available. Since those are not constructed
+  by default, the configuration option "-blockfilterindex=1" has to be
+  provided to take advantage of the optimization. This improves the
+  performance of the RPC calls `rescanblockchain`, `importdescriptors`
+  and `restorewallet`. (#25957)
 
-- To help prevent fingerprinting transactions created by the Widecoin Core wallet, change output
-  amounts are now randomized. (#24494)
+- RPC `unloadwallet` now fails if a rescan is in progress. (#26618)
 
-- The `listtransactions`, `gettransaction`, and `listsinceblock`
-  RPC methods now include a wtxid field (hash of serialized transaction,
-  including witness data) for each transaction. (#24198)
+- Wallet passphrases may now contain null characters.
+  Prior to this change, only characters up to the first
+  null character were recognized and accepted. (#27068)
 
-- The `listsinceblock`, `listtransactions` and `gettransaction` output now contain a new
-  `parent_descs` field for every "receive" entry. (#25504)
+- Address Purposes strings are now restricted to the currently known values of "send",
+  "receive", and "refund". Wallets that have unrecognized purpose strings will have
+  loading warnings, and the `listlabels` RPC will raise an error if an unrecognized purpose
+  is requested. (#27217)
 
-- A new optional `include_change` parameter was added to the `listsinceblock` command.
+- In the `createwallet`, `loadwallet`, `unloadwallet`, and `restorewallet` RPCs, the
+  "warning" string field is deprecated in favor of a "warnings" field that
+  returns a JSON array of strings to better handle multiple warning messages and
+  for consistency with other wallet RPCs. The "warning" field will be fully
+  removed from these RPCs in v26. It can be temporarily re-enabled during the
+  deprecation period by launching widecoind with the configuration option
+  `-deprecatedrpc=walletwarningfield`. (#27279)
 
-- RPC `getreceivedbylabel` now returns an error, "Label not found
-  in wallet" (-4), if the label is not in the address book. (#25122)
-
-Migrating Legacy Wallets to Descriptor Wallets
----------------------------------------------
-
-An experimental RPC `migratewallet` has been added to migrate Legacy (non-descriptor) wallets to
-Descriptor wallets. More information about the migration process is available in the
-[documentation](https://github.com/widecoin/widecoin/blob/master/doc/managing-wallets.md#migrating-legacy-wallets-to-descriptor-wallets).
+- Descriptor wallets can now spend coins sent to P2WSH Miniscript descriptors. (#24149)
 
 GUI changes
 -----------
 
-- A new menu item to restore a wallet from a backup file has been added (gui#471).
+- The "Mask values" is a persistent option now. (gui#701)
+- The "Mask values" option affects the "Transaction" view now, in addition to the
+  "Overview" one. (gui#708)
 
-- Configuration changes made in the widecoin GUI (such as the pruning setting,
-proxy settings, UPNP preferences) are now saved to `<datadir>/settings.json`
-file rather than to the Qt settings backend (windows registry or unix desktop
-config files), so these settings will now apply to widecoind, instead of being
-ignored. (#15936, gui#602)
+REST
+----
 
-- Also, the interaction between GUI settings and `widecoin.conf` settings is
-simplified. Settings from `widecoin.conf` are now displayed normally in the GUI
-settings dialog, instead of in a separate warning message ("Options set in this
-dialog are overridden by the configuration file: -setting=value"). And these
-settings can now be edited because `settings.json` values take precedence over
-`widecoin.conf` values. (#15936)
+- A new `/rest/deploymentinfo` endpoint has been added for fetching various
+  state info regarding deployments of consensus changes. (#25412)
+
+Binary verification
+----
+
+- The binary verification script has been updated. In previous releases it
+  would verify that the binaries had been signed with a single "release key".
+  In this release and moving forward it will verify that the binaries are
+  signed by a _threshold of trusted keys_. For more details and
+  examples, see:
+  https://github.com/widecoin/widecoin/blob/master/contrib/verify-binaries/README.md
+  (#27358)
 
 Low-level changes
 =================
@@ -256,16 +214,124 @@ Low-level changes
 RPC
 ---
 
-- The `deriveaddresses`, `getdescriptorinfo`, `importdescriptors` and `scantxoutset` commands now
-  accept Miniscript expression within a `wsh()` descriptor. (#24148)
-
-- The `getaddressinfo`, `decodescript`, `listdescriptors` and `listunspent` commands may now output
-  a Miniscript descriptor inside a `wsh()` where a `wsh(raw())` descriptor was previously returned. (#24148)
+- The JSON-RPC server now rejects requests where a parameter is specified multiple
+  times with the same name, instead of silently overwriting earlier parameter values
+  with later ones. (#26628)
+- RPC `listsinceblock` now accepts an optional `label` argument
+  to fetch incoming transactions having the specified label. (#25934)
+- Previously `setban`, `addpeeraddress`, `walletcreatefundedpsbt`, methods
+  allowed non-boolean and non-null values to be passed as boolean parameters.
+  Any string, number, array, or object value that was passed would be treated
+  as false. After this change, passing any value except `true`, `false`, or
+  `null` now triggers a JSON value is not of expected type error. (#26213)
 
 Credits
 =======
 
-Thanks to everyone who directly contributed to this release
+Thanks to everyone who directly contributed to this release:
+
+- 0xb10c
+- 721217.xyz
+- @RandyMcMillan
+- amadeuszpawlik
+- Amiti Uttarwar
+- Andrew Chow
+- Andrew Toth
+- Anthony Towns
+- Antoine Poinsot
+- Aurèle Oulès
+- Ben Woosley
+- Widecoin Hodler
+- brunoerg
+- Bushstar
+- Carl Dong
+- Chris Geihsler
+- Cory Fields
+- David Gumberg
+- dergoegge
+- Dhruv Mehta
+- Dimitris Tsapakidis
+- dougEfish
+- Douglas Chimento
+- ekzyis
+- Elichai Turkel
+- Ethan Heilman
+- Fabian Jahr
+- FractalEncrypt
+- furszy
+- Gleb Naumenko
+- glozow
+- Greg Sanders
+- Hennadii Stepanov
+- hernanmarino
+- ishaanam
+- ismaelsadeeq
+- James O'Beirne
+- jdjkelly@gmail.com
+- Jeff Ruane
+- Jeffrey Czyz
+- Jeremy Rubin
+- Jesse Barton
+- João Barbosa
+- JoaoAJMatos
+- John Moffett
+- Jon Atack
+- Jonas Schnelli
+- jonatack
+- Joshua Kelly
+- josibake
+- Juan Pablo Civile
+- kdmukai
+- klementtan
+- Kolby ML
+- kouloumos
+- Kristaps Kaupe
+- laanwj
+- Larry Ruane
+- Leonardo Araujo
+- Leonardo Lazzaro
+- Luke Dashjr
+- MacroFake
+- MarcoFalke
+- Martin Leitner-Ankerl
+- Martin Zumsande
+- Matt Whitlock
+- Matthew Zipkin
+- Michael Ford
+- Miles Liu
+- mruddy
+- Murray Nesbitt
+- muxator
+- omahs
+- pablomartin4wcn
+- Pasta
+- Pieter Wuille
+- Pttn
+- Randall Naar
+- Riahiamirreza
+- roconnor-blockstream
+- Russell O'Connor
+- Ryan Ofsky
+- S3RK
+- Sebastian Falbesoner
+- Seibart Nedor
+- sinetek
+- Sjors Provoost
+- Skuli Dulfari
+- SomberNight
+- Stacie Waleyko
+- stickies-v
+- stratospher
+- Suhas Daftuar
+- Suriyaa Sundararuban
+- TheCharlatan
+- Vasil Dimov
+- Vasil Stoyanov
+- virtu
+- w0xlt
+- willcl-ark
+- yancy
+- Yusuf Sahin HAMZA
 
 As well as to everyone that helped with translations on
 [Transifex](https://www.transifex.com/widecoin/widecoin/).

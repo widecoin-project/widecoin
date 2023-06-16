@@ -1,11 +1,11 @@
-// Copyright (c) 2019-2020 The Widecoin Core developers
+// Copyright (c) 2019-2022 The Widecoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef WIDECOIN_UTIL_SETTINGS_H
 #define WIDECOIN_UTIL_SETTINGS_H
 
-#include <fs.h>
+#include <util/fs.h>
 
 #include <map>
 #include <string>

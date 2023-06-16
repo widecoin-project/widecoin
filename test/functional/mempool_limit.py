@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2014-2021 The Widecoin Core developers
+# Copyright (c) 2014-2022 The Widecoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test mempool limiting together/eviction with the wallet."""
@@ -25,7 +25,6 @@ class MempoolLimitTest(WidecoinTestFramework):
         self.extra_args = [[
             "-datacarriersize=100000",
             "-maxmempool=5",
-            "-spendzeroconfchange=0",
         ]]
         self.supports_cli = False
 

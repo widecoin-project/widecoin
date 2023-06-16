@@ -5,7 +5,7 @@
 #ifndef WIDECOIN_UTIL_ASMAP_H
 #define WIDECOIN_UTIL_ASMAP_H
 
-#include <fs.h>
+#include <util/fs.h>
 
 #include <cstdint>
 #include <vector>

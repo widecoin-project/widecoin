@@ -228,12 +228,25 @@
         <source>Internal error</source>
         <translation type="unfinished">අභ්‍යන්තර දෝෂයකි</translation>
     </message>
-    </context>
+    <message>
+        <source>An internal error occurred. %1 will attempt to continue safely. This is an unexpected bug which can be reported as described below.</source>
+        <translation type="unfinished">අභ්‍යන්තර දෝෂයක් සිදු විය. %1 ආරක්ෂිතව ඉදිරියට යාමට උත්සාහ කරනු ඇත. මෙය පහත විස්තර කර ඇති පරිදි වාර්තා කළ හැකි අනපේක්ෂිත දෝෂයකි.</translation>
+    </message>
+</context>
 <context>
     <name>QObject</name>
     <message>
+        <source>Do you want to reset settings to default values, or to abort without making changes?</source>
+        <extracomment>Explanatory text shown on startup when the settings file cannot be read. Prompts user to make a choice between resetting or aborting.</extracomment>
+        <translation type="unfinished">ඔබට සැකසීම් පෙරනිමි අගයන් වෙත යළි පිහිටුවීමට අවශ්‍යද, නැතහොත් වෙනස්කම් සිදු නොකර නවතා දැමීමටද?</translation>
+    </message>
+    <message>
         <source>Error: %1</source>
         <translation type="unfinished">දෝෂය: %1</translation>
+    </message>
+    <message>
+        <source>%1 didn't yet exit safely…</source>
+        <translation type="unfinished">%1 තවමත් ආරක්ෂිතව පිටව ගොස් නැත ...</translation>
     </message>
     <message>
         <source>unknown</source>
@@ -246,79 +259,44 @@
     <message numerus="yes">
         <source>%n second(s)</source>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>%n second(s)</numerusform>
+            <numerusform>%n second(s)</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <source>%n minute(s)</source>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>%n minute(s)</numerusform>
+            <numerusform>%n minute(s)</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <source>%n hour(s)</source>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>%n hour(s)</numerusform>
+            <numerusform>%n hour(s)</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <source>%n day(s)</source>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>%n day(s)</numerusform>
+            <numerusform>%n day(s)</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <source>%n week(s)</source>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>%n week(s)</numerusform>
+            <numerusform>%n week(s)</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <source>%n year(s)</source>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>%n year(s)</numerusform>
+            <numerusform>%n year(s)</numerusform>
         </translation>
-    </message>
-    </context>
-<context>
-    <name>widecoin-core</name>
-    <message>
-        <source>The %s developers</source>
-        <translation type="unfinished">%s සංවර්ධකයින්</translation>
-    </message>
-    <message>
-        <source>Error creating %s</source>
-        <translation type="unfinished">%s සෑදීමේ දෝෂයකි</translation>
-    </message>
-    <message>
-        <source>Error loading %s</source>
-        <translation type="unfinished">%s පූරණය වීමේ දෝෂයකි</translation>
-    </message>
-    <message>
-        <source>Importing…</source>
-        <translation type="unfinished">ආයාත වෙමින්…</translation>
-    </message>
-    <message>
-        <source>Loading wallet…</source>
-        <translation type="unfinished">පසුම්බිය පූරණය වෙමින්…</translation>
-    </message>
-    <message>
-        <source>Rescanning…</source>
-        <translation type="unfinished">යළි සුපිරික්සමින්…</translation>
-    </message>
-    <message>
-        <source>This is experimental software.</source>
-        <translation type="unfinished">මෙය පර්යේෂණාත්මක මෘදුකාංගයකි.</translation>
-    </message>
-    <message>
-        <source>Unknown address type '%s'</source>
-        <translation type="unfinished">'%s' නොදන්නා ලිපින වර්ගයකි</translation>
     </message>
     </context>
 <context>
@@ -431,8 +409,8 @@
     <message numerus="yes">
         <source>Processed %n block(s) of transaction history.</source>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>Processed %n block(s) of transaction history.</numerusform>
+            <numerusform>Processed %n block(s) of transaction history.</numerusform>
         </translation>
     </message>
     <message>
@@ -448,10 +426,6 @@
         <translation type="unfinished">තොරතුර</translation>
     </message>
     <message>
-        <source>Up to date</source>
-        <translation type="unfinished">යාවත්කාලීනයි</translation>
-    </message>
-    <message>
         <source>&amp;Sending addresses</source>
         <translation type="unfinished">&amp;යවන ලිපින</translation>
     </message>
@@ -461,15 +435,20 @@
     </message>
     <message>
         <source>Open Wallet</source>
-        <translation type="unfinished">පසුම්බිය විවෘත කරන්න</translation>
+        <translation type="unfinished">පසුම්බිය බලන්න</translation>
     </message>
     <message>
         <source>Open a wallet</source>
-        <translation type="unfinished">පසුම්බියක් විවෘත කරන්න</translation>
+        <translation type="unfinished">පසුම්බියක් බලන්න</translation>
     </message>
     <message>
         <source>Close wallet</source>
         <translation type="unfinished">පසුම්බිය වසන්න</translation>
+    </message>
+    <message>
+        <source>Restore Wallet…</source>
+        <extracomment>Name of the menu item that restores wallet from a backup file.</extracomment>
+        <translation type="unfinished">පසුම්බිය ප්‍රතිස්ථාපනය කිරීම</translation>
     </message>
     <message>
         <source>Close all wallets</source>
@@ -483,6 +462,11 @@
         <source>Wallet Data</source>
         <extracomment>Name of the wallet data file format.</extracomment>
         <translation type="unfinished">පසුම්බියේ දත්ත</translation>
+    </message>
+    <message>
+        <source>Restore Wallet</source>
+        <extracomment>Title of pop-up window shown when the user is attempting to restore a wallet.</extracomment>
+        <translation type="unfinished">පසුම්බිය ප්‍රතිස්ථාපනය කිරීම</translation>
     </message>
     <message>
         <source>Wallet Name</source>
@@ -517,8 +501,8 @@
         <source>%n active connection(s) to Widecoin network.</source>
         <extracomment>A substring of the tooltip.</extracomment>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>%n active connection(s) to Widecoin network.</numerusform>
+            <numerusform>%n active connection(s) to Widecoin network.</numerusform>
         </translation>
     </message>
     <message>
@@ -665,9 +649,27 @@
     <message>
         <source>Open Wallet</source>
         <extracomment>Title of window indicating the progress of opening of a wallet.</extracomment>
-        <translation type="unfinished">පසුම්බිය විවෘත කරන්න</translation>
+        <translation type="unfinished">පසුම්බිය බලන්න</translation>
     </message>
     </context>
+<context>
+    <name>RestoreWalletActivity</name>
+    <message>
+        <source>Restore Wallet</source>
+        <extracomment>Title of progress window which is displayed when wallets are being restored.</extracomment>
+        <translation type="unfinished">පසුම්බිය ප්‍රතිස්ථාපනය කිරීම</translation>
+    </message>
+    <message>
+        <source>Restore wallet failed</source>
+        <extracomment>Title of message box which is displayed when the wallet could not be restored.</extracomment>
+        <translation type="unfinished">පසුම්බිය ප්‍රතිස්ථාපනය කිරීම අසාර්ථකයි</translation>
+    </message>
+    <message>
+        <source>Restore wallet message</source>
+        <extracomment>Title of message box which is displayed when the wallet is successfully restored.</extracomment>
+        <translation type="unfinished">පසුම්බිය ප්‍රතිස්ථාපනය කිරීමේ පණිවිඩය </translation>
+    </message>
+</context>
 <context>
     <name>WalletController</name>
     <message>
@@ -771,8 +773,8 @@
         <source>(sufficient to restore backups %n day(s) old)</source>
         <extracomment>Explanatory text on the capability of the current prune target.</extracomment>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>(sufficient to restore backups %n day(s) old)</numerusform>
+            <numerusform>(sufficient to restore backups %n day(s) old)</numerusform>
         </translation>
     </message>
     <message>
@@ -926,6 +928,11 @@
 <context>
     <name>PeerTableModel</name>
     <message>
+        <source>Age</source>
+        <extracomment>Title of Peers Table column which indicates the duration (length of time) since the peer connection started.</extracomment>
+        <translation type="unfinished">වයස</translation>
+    </message>
+    <message>
         <source>Address</source>
         <extracomment>Title of Peers Table column which contains the IP/Onion/I2P address of the connected peer.</extracomment>
         <translation type="unfinished">ලිපිනය</translation>
@@ -1042,8 +1049,8 @@
     <message numerus="yes">
         <source>Estimated to begin confirmation within %n block(s).</source>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>Estimated to begin confirmation within %n block(s).</numerusform>
+            <numerusform>Estimated to begin confirmation within %n block(s).</numerusform>
         </translation>
     </message>
     <message>
@@ -1094,8 +1101,8 @@
     <message numerus="yes">
         <source>matures in %n more block(s)</source>
         <translation type="unfinished">
-            <numerusform />
-            <numerusform />
+            <numerusform>matures in %n more block(s)</numerusform>
+            <numerusform>matures in %n more block(s)</numerusform>
         </translation>
     </message>
     <message>
@@ -1272,4 +1279,47 @@
         <translation type="unfinished">අවලංගු</translation>
     </message>
 </context>
+<context>
+    <name>widecoin-core</name>
+    <message>
+        <source>The %s developers</source>
+        <translation type="unfinished">%s සංවර්ධකයින්</translation>
+    </message>
+    <message>
+        <source>Error creating %s</source>
+        <translation type="unfinished">%s සෑදීමේ දෝෂයකි</translation>
+    </message>
+    <message>
+        <source>Error loading %s</source>
+        <translation type="unfinished">%s පූරණය වීමේ දෝෂයකි</translation>
+    </message>
+    <message>
+        <source>Error: Unable to make a backup of your wallet</source>
+        <translation type="unfinished">දෝෂය: ඔබගේ පසුම්බිය ප්‍රතිස්ථාපනය කල නොහැකි විය.</translation>
+    </message>
+    <message>
+        <source>Importing…</source>
+        <translation type="unfinished">ආයාත වෙමින්…</translation>
+    </message>
+    <message>
+        <source>Loading wallet…</source>
+        <translation type="unfinished">පසුම්බිය පූරණය වෙමින්…</translation>
+    </message>
+    <message>
+        <source>Rescanning…</source>
+        <translation type="unfinished">යළි සුපිරික්සමින්…</translation>
+    </message>
+    <message>
+        <source>This is experimental software.</source>
+        <translation type="unfinished">මෙය පර්යේෂණාත්මක මෘදුකාංගයකි.</translation>
+    </message>
+    <message>
+        <source>Unknown address type '%s'</source>
+        <translation type="unfinished">'%s' නොදන්නා ලිපින වර්ගයකි</translation>
+    </message>
+    <message>
+        <source>Settings file could not be read</source>
+        <translation type="unfinished">සැකසීම් ගොනුව කියවිය නොහැක</translation>
+    </message>
+    </context>
 </TS>
