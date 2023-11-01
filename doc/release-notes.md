@@ -92,8 +92,8 @@ Credits
 
 Thanks to everyone who directly contributed to this release:
 
-- Widecoin Development team
-- Bitcoin Development team
+- Widecoin Development Team
+- Bitcoin Development Team
 
 As well as to everyone that helped with translations on
 [Transifex](https://www.transifex.com/widecoin/widecoin/).
