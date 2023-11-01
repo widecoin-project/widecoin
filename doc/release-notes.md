@@ -83,22 +83,17 @@ Notable changes
 - #27844 ci: Use podman stop over podman kill
 - #27886 ci: Switch to amd64 container in "ARM" task
 
+### Encryption
+ 
+- Fixed wallet encryption 
+
 Credits
 =======
 
 Thanks to everyone who directly contributed to this release:
 
-- Abubakar Sadiq Ismail
-- Andrew Chow
-- Bruno Garcia
-- Gregory Sanders
-- Hennadii Stepanov
-- MacroFake
-- Matias Furszyfer
-- Michael Ford
-- Pieter Wuille
-- stickies-v
-- Will Clark
+- Widecoin Development team
+- Bitcoin Development team
 
 As well as to everyone that helped with translations on
 [Transifex](https://www.transifex.com/widecoin/widecoin/).
