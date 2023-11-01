@@ -29,7 +29,7 @@ const std::string CLIENT_NAME("WidecoinCore");
 #endif
 
 //! git will put "#define GIT_COMMIT_ID ..." on the next line inside archives. 
-#define GIT_COMMIT_ID "8105bce5b384c72cf08b25b7c5343622754e7337"
+#define GIT_COMMIT_ID "7da4ae1f78ab4f6c8b19c8ca89bd6b2a6c4836ea"
 
 #ifdef BUILD_GIT_TAG
     #define BUILD_DESC BUILD_GIT_TAG
@@ -83,7 +83,7 @@ std::string CopyrightHolders(const std::string& strPrefix)
     const auto copyright_devs = strprintf(_(COPYRIGHT_HOLDERS).translated, COPYRIGHT_HOLDERS_SUBSTITUTION);
     std::string strCopyrightHolders = strPrefix + copyright_devs;
 
-    // Make sure Widecoin Core copyright is not removed by accident
+    // Make sure Bitcoin Core copyright is not removed by accident
     if (copyright_devs.find("Widecoin Core") == std::string::npos) {
         strCopyrightHolders += "\n" + strPrefix + "The Widecoin Core developers";
     }
@@ -97,7 +97,6 @@ std::string CopyrightHolders(const std::string& strPrefix)
 
 std::string LicenseInfo()
 {
-        
     const std::string URL_SOURCE_CODE = "<https://github.com/widecoin-project/widecoin>";
     const std::string URL_WEBSITE = "<https://widecoin.org>";
 

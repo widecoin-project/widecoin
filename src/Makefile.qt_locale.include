@@ -6,6 +6,7 @@ QT_TS = \
   qt/locale/widecoin_be.ts \
   qt/locale/widecoin_bg.ts \
   qt/locale/widecoin_bn.ts \
+  qt/locale/widecoin_br.ts \
   qt/locale/widecoin_bs.ts \
   qt/locale/widecoin_ca.ts \
   qt/locale/widecoin_cmn.ts \
@@ -68,6 +69,7 @@ QT_TS = \
   qt/locale/widecoin_mr.ts \
   qt/locale/widecoin_mr_IN.ts \
   qt/locale/widecoin_ms.ts \
+  qt/locale/widecoin_mt.ts \
   qt/locale/widecoin_my.ts \
   qt/locale/widecoin_nb.ts \
   qt/locale/widecoin_ne.ts \

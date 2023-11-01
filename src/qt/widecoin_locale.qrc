@@ -7,6 +7,7 @@
         <file alias="be">locale/widecoin_be.qm</file>
         <file alias="bg">locale/widecoin_bg.qm</file>
         <file alias="bn">locale/widecoin_bn.qm</file>
+        <file alias="br">locale/widecoin_br.qm</file>
         <file alias="bs">locale/widecoin_bs.qm</file>
         <file alias="ca">locale/widecoin_ca.qm</file>
         <file alias="cmn">locale/widecoin_cmn.qm</file>
@@ -69,6 +70,7 @@
         <file alias="mr">locale/widecoin_mr.qm</file>
         <file alias="mr_IN">locale/widecoin_mr_IN.qm</file>
         <file alias="ms">locale/widecoin_ms.qm</file>
+        <file alias="mt">locale/widecoin_mt.qm</file>
         <file alias="my">locale/widecoin_my.qm</file>
         <file alias="nb">locale/widecoin_nb.qm</file>
         <file alias="ne">locale/widecoin_ne.qm</file>
