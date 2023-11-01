@@ -1,8 +1,0 @@
-blank_issues_enabled: true
-contact_links:
-  - name: Widecoin Core Security Policy
-    url: https://github.com/widecoin/widecoin/blob/master/SECURITY.md
-    about: View security policy
-  - name: Widecoin Core Developers
-    url: https://widecoincore.org
-    about: Widecoin Core homepage

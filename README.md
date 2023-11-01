@@ -1,19 +1,19 @@
 Widecoin Core integration/staging tree
 =====================================
 
-https://widecoin.org
+https://widecoincore.org
 
-What is Widecoin?
-----------------
+For an immediately usable, binary version of the Widecoin Core software, see
+https://widecoincore.org/en/download/.
 
-Widecoin is a digital currency that enables instant payments to
-anyone, anywhere in the world. Widecoin uses peer-to-peer technology to operate
-with no central authority: managing transactions and issuing money are carried
-out collectively by the network. Widecoin Core is the name of open source
-software which enables the use of this currency.
+What is Widecoin Core?
+---------------------
 
-For more information, as well as an immediately useable, binary version of
-the Widecoin Core software, see [https://widecoin.org](https://widecoin.org).
+Widecoin Core connects to the Widecoin peer-to-peer network to download and fully
+validate blocks and transactions. It also includes a wallet and graphical user
+interface, which can be optionally built.
+
+Further information about Widecoin Core is available in the [doc folder](/doc).
 
 License
 -------
@@ -23,9 +23,15 @@ information or see https://opensource.org/licenses/MIT.
 
 Development Process
 -------------------
-The `master` branch is regularly built and tested, but is not guaranteed to be
-completely stable. [Tags](https://github.com/widecoin-project/widecoin/tags) are created
-regularly to indicate new official, stable release versions of widecoin Core.
+
+The `master` branch is regularly built (see `doc/build-*.md` for instructions) and tested, but it is not guaranteed to be
+completely stable. [Tags](https://github.com/widecoin/widecoin/tags) are created
+regularly from release branches to indicate new official, stable release versions of Widecoin Core.
+
+The https://github.com/widecoin-core/gui repository is used exclusively for the
+development of the GUI. Its master branch is identical in all monotree
+repositories. Release branches and tags do not exist, so please do not fork
+that repository unless it is for development reasons.
 
 The contribution workflow is described in [CONTRIBUTING.md](CONTRIBUTING.md)
 and useful hints for developers can be found in [doc/developer-notes.md](doc/developer-notes.md).
@@ -46,10 +52,11 @@ submit new unit tests for old code. Unit tests can be compiled and run
 and extending unit tests can be found in [/src/test/README.md](/src/test/README.md).
 
 There are also [regression and integration tests](/test), written
-in Python, that are run automatically on the build server.
+in Python.
 These tests can be run (if the [test dependencies](/test) are installed) with: `test/functional/test_runner.py`
 
-The Travis CI system makes sure that every pull request is built for Windows, Linux, and macOS, and that unit/sanity tests are run automatically.
+The CI (Continuous Integration) systems make sure that every pull request is built for Windows, Linux, and macOS,
+and that unit/sanity tests are run automatically.
 
 ### Manual Quality Assurance (QA) Testing
 
@@ -61,8 +68,8 @@ not straightforward.
 Translations
 ------------
 
-We only accept translation fixes that are submitted through [Bitcoin Core's Transifex page](https://www.transifex.com/projects/p/bitcoin/).
-Translations are converted to widecoin periodically.
+Changes to translations as well as new translations can be submitted to
+[Widecoin Core's Transifex page](https://www.transifex.com/widecoin/widecoin/).
 
 Translations are periodically pulled from Transifex and merged into the git repository. See the
 [translation process](doc/translation_process.md) for details on how this works.

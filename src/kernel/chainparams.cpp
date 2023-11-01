@@ -80,7 +80,7 @@ public:
             uint256S("0x0000000b9fe756297c4f3b60ed7f55169680f8277812855ec546d5cb888c93a6"), SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_WITNESS);
         consensus.BIP34Height = 2294;
         consensus.BIP34Hash = uint256S("0x0000000b9fe756297c4f3b60ed7f55169680f8277812855ec546d5cb888c93a6");
-        consensus.BIP65Height = 2294;
+        consensus.BIP65Height = 2294; 
         consensus.BIP66Height = 2294; 
         consensus.CSVHeight = 2294; 
         consensus.SegwitHeight = 0; 
@@ -104,7 +104,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 709632; // Approximately November 12th, 2021
 
         consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000017c5953833ff7e9098");
-        consensus.defaultAssumeValid = uint256S("0x000000000000067565350a3898e1667b95b4157df514f4045394525f311cac4d"); // 751565
+        consensus.defaultAssumeValid = uint256S("0x000000000000067565350a3898e1667b95b4157df514f4045394525f311cac4d"); // 784000
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -115,7 +115,7 @@ public:
         pchMessageStart[1] = 0xbf;
         pchMessageStart[2] = 0xc3;
         pchMessageStart[3] = 0xdc;
-        nDefaultPort = 8553;
+        nDefaultPort = 8333;
         nPruneAfterHeight = 100000;
         m_assumed_blockchain_size = 4;
         m_assumed_chain_state_size = 3;
@@ -167,7 +167,7 @@ public:
         };
 
         chainTxData = ChainTxData{
-            // Data from RPC: getchaintxstats 1500000 00000000000003af9cedf415f5ce41aecaff75ace4b0e26d2ac4188e78096172
+            // Data from RPC: getchaintxstats 4096 000000000000000000035c3f0d31e71a5ee24c5aaf3354689f65bd7b07dee632
             .nTime    = 1686717462,
             .nTxCount = 2183176,
             .dTxRate  = 0.030865805498897,
@@ -189,8 +189,8 @@ public:
             uint256S("0x"), SCRIPT_VERIFY_NONE);
         consensus.BIP34Height = 0;
         consensus.BIP34Hash = uint256S("0x");
-        consensus.BIP65Height = 0;
-        consensus.BIP66Height = 0;
+        consensus.BIP65Height = 0; 
+        consensus.BIP66Height = 0; 
         consensus.CSVHeight = 0;
         consensus.SegwitHeight = 0;
         consensus.MinBIP9WarningHeight = 0; // segwit activation height + miner confirmation window
@@ -213,7 +213,7 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0; // No activation delay
 
         consensus.nMinimumChainWork = uint256S("0x");
-        consensus.defaultAssumeValid = uint256S("0x");
+        consensus.defaultAssumeValid = uint256S("0x"); // 2429000
 
         pchMessageStart[0] = 0xfe;
         pchMessageStart[1] = 0xc2;
@@ -262,7 +262,7 @@ public:
 
         chainTxData = ChainTxData{
             // Data from RPC: getchaintxstats 4096 0000000000000021bc50a89cde4870d4a81ffe0153b3c8de77b435a2fd3f6761
-            .nTime    = 1616884884,
+            .nTime    = 616884884,
             .nTxCount = 0,
             .dTxRate  = 0.1232886622799463,
         };
@@ -285,14 +285,14 @@ public:
 
             // Hardcoded nodes can be removed once there are more DNS seeds
             //vSeeds.emplace_back("178.128.221.177");
-           // vSeeds.emplace_back("v7ajjeirttkbnt32wpy3c6w3emwnfr3fkla7hpxcfokr3ysd3kqtzmqd.onion:38333");
+            //vSeeds.emplace_back("v7ajjeirttkbnt32wpy3c6w3emwnfr3fkla7hpxcfokr3ysd3kqtzmqd.onion:38333");
 
             consensus.nMinimumChainWork = uint256S("0x");
             consensus.defaultAssumeValid = uint256S("0x"); // 138000
             m_assumed_blockchain_size = 1;
             m_assumed_chain_state_size = 0;
             chainTxData = ChainTxData{
-                // Data from RPC: getchaintxstats 4096 000000d1a0e224fa4679d2fb2187ba55431c284fa1b74cbc8cfda866fd4d2c09
+                // Data from RPC: getchaintxstats 4096 0000004429ef154f7e00b4f6b46bfbe2d2678ecd351d95bbfca437ab9a5b84ec
                 .nTime    = 1617605541,
                 .nTxCount = 0,
                 .dTxRate  = 0.00159272030651341,
@@ -458,7 +458,7 @@ public:
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();
-        //Seeds.emplace_back("dummySeed.invalid.");
+        //vSeeds.emplace_back("dummySeed.invalid.");
 
         fDefaultConsistencyChecks = true;
         fRequireStandard = true;
