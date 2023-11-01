@@ -85,7 +85,7 @@ Notable changes
 
 ### Encryption
  
-- Fixed wallet encryption 
+- #E1001 fixed wallet encryption 
 
 Credits
 =======
