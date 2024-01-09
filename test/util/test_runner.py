@@ -74,6 +74,11 @@ def bctest(testDir, testObj, buildenv):
     """
     # Get the exec names and arguments
     execprog = os.path.join(buildenv["BUILDDIR"], "src", testObj["exec"] + buildenv["EXEEXT"])
+    if testObj["exec"] == "./widecoin-util":
+        execprog = os.getenv("WIDECOINUTIL", default=execprog)
+    elif testObj["exec"] == "./widecoin-tx":
+        execprog = os.getenv("WIDECOINTX", default=execprog)
+
     execargs = testObj['args']
     execrun = [execprog] + execargs
 

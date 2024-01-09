@@ -1,4 +1,5 @@
 QT_TS = \
+  qt/locale/widecoin_af.ts \
   qt/locale/widecoin_am.ts \
   qt/locale/widecoin_ar.ts \
   qt/locale/widecoin_az.ts \
@@ -31,6 +32,7 @@ QT_TS = \
   qt/locale/widecoin_fa.ts \
   qt/locale/widecoin_fi.ts \
   qt/locale/widecoin_fil.ts \
+  qt/locale/widecoin_fo.ts \
   qt/locale/widecoin_fr.ts \
   qt/locale/widecoin_fr_CM.ts \
   qt/locale/widecoin_fr_LU.ts \
@@ -52,6 +54,7 @@ QT_TS = \
   qt/locale/widecoin_ja.ts \
   qt/locale/widecoin_ka.ts \
   qt/locale/widecoin_kk.ts \
+  qt/locale/widecoin_kk@latin.ts \
   qt/locale/widecoin_kl.ts \
   qt/locale/widecoin_km.ts \
   qt/locale/widecoin_kn.ts \
@@ -60,6 +63,7 @@ QT_TS = \
   qt/locale/widecoin_ku_IQ.ts \
   qt/locale/widecoin_ky.ts \
   qt/locale/widecoin_la.ts \
+  qt/locale/widecoin_lb.ts \
   qt/locale/widecoin_lt.ts \
   qt/locale/widecoin_lv.ts \
   qt/locale/widecoin_mg.ts \

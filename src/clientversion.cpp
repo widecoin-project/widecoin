@@ -29,7 +29,7 @@ const std::string CLIENT_NAME("WidecoinCore");
 #endif
 
 //! git will put "#define GIT_COMMIT_ID ..." on the next line inside archives. 
-#define GIT_COMMIT_ID "7da4ae1f78ab4f6c8b19c8ca89bd6b2a6c4836ea"
+#define GIT_COMMIT_ID "44d8b13c81e5276eb610c99f227a4d090cc532f6"
 
 #ifdef BUILD_GIT_TAG
     #define BUILD_DESC BUILD_GIT_TAG

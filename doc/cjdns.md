@@ -112,5 +112,4 @@ There are several ways to see your CJDNS address in Widecoin Core:
 To see which CJDNS peers your node is connected to, use `widecoin-cli -netinfo 4`
 or the `getpeerinfo` RPC (i.e. `widecoin-cli getpeerinfo`).
 
-To see which CJDNS addresses your node knows, use the `getnodeaddresses 0 cjdns`
-RPC.
+You can use the `getnodeaddresses` RPC to fetch a number of CJDNS peers known to your node; run `widecoin-cli help getnodeaddresses` for details.

@@ -34,7 +34,7 @@ ${WIDECOIN_CLI_CALL} invalidateblock "${PIVOT_BLOCKHASH}"
 
 if [[ "${OUTPUT_PATH}" = "-" ]]; then
   (>&2 echo "Generating txoutset info...")
-  ${WIDECOIN_CLI_CALL} gettxoutsetinfo | grep hash_serialized_2 | sed 's/^.*: "\(.\+\)\+",/\1/g'
+  ${WIDECOIN_CLI_CALL} gettxoutsetinfo | grep hash_serialized_3 | sed 's/^.*: "\(.\+\)\+",/\1/g'
 else
   (>&2 echo "Generating UTXO snapshot...")
   ${WIDECOIN_CLI_CALL} dumptxoutset "${OUTPUT_PATH}"

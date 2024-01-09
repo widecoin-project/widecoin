@@ -7,10 +7,8 @@ To run linters locally with the same versions as the CI environment, use the inc
 Dockerfile:
 
 ```sh
-cd ./ci/lint
-docker build -t widecoin-linter .
+DOCKER_BUILDKIT=1 docker build -t widecoin-linter --file "./ci/lint_imagefile" ./
 
-cd /root/of/widecoin/repo
 docker run --rm -v $(pwd):/widecoin -it widecoin-linter
 ```
 
