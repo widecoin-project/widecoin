@@ -55,8 +55,8 @@ QString WidecoinUnits::description(Unit unit)
     switch (unit) {
     case Unit::WCN: return QString("Widecoins");
     case Unit::mWCN: return QString("mWCN (1 / 1" THIN_SP_UTF8 "000)");
-    case Unit::uWCN: return QString("µWCN (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-    case Unit::SAT: return QString("sWCN (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case Unit::uWCN: return QString("µWCN (bits) (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case Unit::SAT: return QString("sWCN (sat) (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }

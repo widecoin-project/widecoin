@@ -17,7 +17,8 @@ from typing import List
 HEADER_ID_PREFIX = 'WIDECOIN_'
 HEADER_ID_SUFFIX = '_H'
 
-EXCLUDE_FILES_WITH_PREFIX = ['src/crypto/ctaes',
+EXCLUDE_FILES_WITH_PREFIX = ['contrib/devtools/widecoin-tidy',
+                             'src/crypto/ctaes',
                              'src/leveldb',
                              'src/crc32c',
                              'src/secp256k1',

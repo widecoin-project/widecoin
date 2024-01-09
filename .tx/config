@@ -1,7 +1,7 @@
 [main]
 host = https://www.transifex.com
 
-[o:widecoin:p:widecoin:r:qt-translation-025x]
+[o:widecoin:p:widecoin:r:qt-translation-026x]
 file_filter = src/qt/locale/widecoin_<lang>.xlf
 source_file = src/qt/locale/widecoin_en.xlf
 source_lang = en

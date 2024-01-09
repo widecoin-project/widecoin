@@ -6,7 +6,6 @@
 
 import json
 
-from pathlib import Path
 
 from test_framework.test_framework import WidecoinTestFramework
 from test_framework.test_node import ErrorMatch
@@ -21,8 +20,8 @@ class SettingsTest(WidecoinTestFramework):
 
     def run_test(self):
         node, = self.nodes
-        settings = Path(node.datadir, self.chain, "settings.json")
-        conf = Path(node.datadir, "widecoin.conf")
+        settings = node.chain_path / "settings.json"
+        conf = node.datadir_path / "widecoin.conf"
 
         # Assert empty settings file was created
         self.stop_node(0)
@@ -79,7 +78,7 @@ class SettingsTest(WidecoinTestFramework):
             self.stop_node(0)
 
         # Test alternate settings path
-        altsettings = Path(node.datadir, "altsettings.json")
+        altsettings = node.datadir_path / "altsettings.json"
         with altsettings.open("w") as fp:
             fp.write('{"key": "value"}')
         with node.assert_debug_log(expected_msgs=['Setting file arg: key = "value"']):

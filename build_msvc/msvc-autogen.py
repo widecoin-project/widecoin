@@ -111,7 +111,6 @@ def main():
         set_properties(vcxproj_filename, '@SOURCE_FILES@\n', content)
     parse_config_into_wcn_config()
     copyfile(os.path.join(SOURCE_DIR,'../build_msvc/widecoin_config.h'), os.path.join(SOURCE_DIR, 'config/widecoin-config.h'))
-    copyfile(os.path.join(SOURCE_DIR,'../build_msvc/libsecp256k1_config.h'), os.path.join(SOURCE_DIR, 'secp256k1/src/libsecp256k1-config.h'))
 
 if __name__ == '__main__':
     main()

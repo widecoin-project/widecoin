@@ -5,15 +5,13 @@
 #ifndef WIDECOIN_NODE_CHAINSTATEMANAGER_ARGS_H
 #define WIDECOIN_NODE_CHAINSTATEMANAGER_ARGS_H
 
+#include <util/result.h>
 #include <validation.h>
 
-#include <optional>
-
 class ArgsManager;
-struct bilingual_str;
 
 namespace node {
-std::optional<bilingual_str> ApplyArgsManOptions(const ArgsManager& args, ChainstateManager::Options& opts);
+[[nodiscard]] util::Result<void> ApplyArgsManOptions(const ArgsManager& args, ChainstateManager::Options& opts);
 } // namespace node
 
 #endif // WIDECOIN_NODE_CHAINSTATEMANAGER_ARGS_H

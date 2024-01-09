@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
     <qresource prefix="/translations">
+        <file alias="af">locale/widecoin_af.qm</file>
         <file alias="am">locale/widecoin_am.qm</file>
         <file alias="ar">locale/widecoin_ar.qm</file>
         <file alias="az">locale/widecoin_az.qm</file>
@@ -32,6 +33,7 @@
         <file alias="fa">locale/widecoin_fa.qm</file>
         <file alias="fi">locale/widecoin_fi.qm</file>
         <file alias="fil">locale/widecoin_fil.qm</file>
+        <file alias="fo">locale/widecoin_fo.qm</file>
         <file alias="fr">locale/widecoin_fr.qm</file>
         <file alias="fr_CM">locale/widecoin_fr_CM.qm</file>
         <file alias="fr_LU">locale/widecoin_fr_LU.qm</file>
@@ -53,6 +55,7 @@
         <file alias="ja">locale/widecoin_ja.qm</file>
         <file alias="ka">locale/widecoin_ka.qm</file>
         <file alias="kk">locale/widecoin_kk.qm</file>
+        <file alias="kk@latin">locale/widecoin_kk@latin.qm</file>
         <file alias="kl">locale/widecoin_kl.qm</file>
         <file alias="km">locale/widecoin_km.qm</file>
         <file alias="kn">locale/widecoin_kn.qm</file>
@@ -61,6 +64,7 @@
         <file alias="ku_IQ">locale/widecoin_ku_IQ.qm</file>
         <file alias="ky">locale/widecoin_ky.qm</file>
         <file alias="la">locale/widecoin_la.qm</file>
+        <file alias="lb">locale/widecoin_lb.qm</file>
         <file alias="lt">locale/widecoin_lt.qm</file>
         <file alias="lv">locale/widecoin_lv.qm</file>
         <file alias="mg">locale/widecoin_mg.qm</file>
